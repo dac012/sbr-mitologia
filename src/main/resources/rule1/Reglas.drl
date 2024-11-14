@@ -45,6 +45,19 @@ rule "Dime estados"
 end
 */
 
+rule "Tiene algo petrificante -> mata a Ceto"
+	when
+		$heroe: Heroe($inventario := tiene) and Vivo(sujeto == $heroe)
+		(Petrificar($inventario contains objeto) or Petrificar(sujeto == $heroe))
+		$ceto: CriaturaMitologica(nombre == "Ceto") and $vivoCeto : Vivo(sujeto == $ceto)
+	then
+		insert(new Muerto($ceto));
+		delete($vivoCeto);
+		modify($heroe){addVictima($ceto);}
+		modify($ceto){setMatado_por($heroe);}
+		System.out.println($heroe.getNombre() + " ha matado a Ceto");
+end
+
 rule "Muerto -> no Vivo"
 	when
 		$ser: Ser()
@@ -181,17 +194,12 @@ end
 
 rule "Favores de Hermes, Atenea y Hades -> localiza Grayas"
 	when
-		$hermes: DiosMayor(nombre == "Hermes")
-		Vivo(sujeto == $hermes)
-		$atenea: DiosMayor(nombre == "Atenea")
-		Vivo(sujeto == $atenea)
-		$hades: DiosMayor(nombre == "Hades")
-		Vivo(sujeto == $hades)
-		$grayas: DiosMenor(nombre == "Grayas")
-		Vivo(sujeto == $grayas)
+		$hermes: DiosMayor(nombre == "Hermes") and Vivo(sujeto == $hermes)
+		$atenea: DiosMayor(nombre == "Atenea") and Vivo(sujeto == $atenea)
+		$hades: DiosMayor(nombre == "Hades") and Vivo(sujeto == $hades)
+		$grayas: DiosMenor(nombre == "Grayas") and Vivo(sujeto == $grayas)
 		$h: Heroe(tiene_localizado_a not contains $grayas, tiene_el_favor_de contains $hermes, tiene_el_favor_de contains $atenea,
-			tiene_el_favor_de  contains $hades)
-		Vivo(sujeto == $h)
+			tiene_el_favor_de  contains $hades) and Vivo(sujeto == $h)
 	then
 		modify($h){addLocalizado($grayas);}
 		System.out.println($h.getNombre() + " ha localizado a las Grayas");
@@ -201,14 +209,9 @@ rule "Localiza Grayas -> roba ojo"
 	when
 		$ojo: Objeto(nombre == "Ojo Grayas")
 		$grayas: DiosMenor(nombre == "Grayas", tiene contains $ojo)
-		Vivo(sujeto == $grayas)
 		$ninfas: DiosMenor(nombre == "Ninfas")
-		Vivo(sujeto == $ninfas)
 		$h: Heroe(tiene_localizado_a contains $grayas, tiene_localizado_a not contains $ninfas)
-		Vivo(sujeto == $h
-		
-		
-		)
+		Vivo(sujeto == $grayas) and Vivo(sujeto == $h) and Vivo(sujeto == $ninfas)
 	then
 		modify($h){addObjeto($ojo);}
 		modify($grayas){quitarObjeto($ojo);}
@@ -263,27 +266,14 @@ end
 rule "Tiene zurrón y mata a Medusa -> consigue cabeza."
 	when
 		$zurron: Objeto(nombre == "Zurron Magico")
-		$ser: Ser(tiene contains $zurron)
+		$heroe: Heroe(tiene contains $zurron)
 		$cabezaMedusa: ObjetoMitologico(nombre == "Cabeza de Medusa")
-		$medusa: CriaturaMitologica(nombre == "Medusa", matado_por == $ser)
+		$medusa: CriaturaMitologica(nombre == "Medusa", matado_por == $heroe)
 		Muerto(sujeto == $medusa)
-		not(Ser(tiene contains $cabezaMedusa))
+		not(Heroe(tiene contains $cabezaMedusa))
 	then
-		modify($ser){addObjeto($cabezaMedusa);}
-		System.out.println($ser.getNombre() + " consigue la cabeza de Medusa");
-end
-
-rule "Tiene algo petrificante -> mata a Ceto"
-	when
-		$ser: Ser($inventario := tiene)
-		Petrificar($inventario contains objeto)
-		$ceto: CriaturaMitologica(nombre == "Ceto")
-		not(Muerto(sujeto == $ceto))
-	then
-		insert(new Muerto($ceto));
-		modify($ser){addVictima($ceto);}
-		modify($ceto){setMatado_por($ser);}
-		System.out.println($ser.getNombre() + " ha matado a Ceto");
+		modify($heroe){addObjeto($cabezaMedusa);}
+		System.out.println($heroe.getNombre() + " consigue la cabeza de Medusa");
 end
 
 rule "Ceto muerto y tiene alguien apresado -> el asesino de ceto lo libera"

@@ -45,20 +45,65 @@ rule "Dime estados"
 end
 */
 
+rule "Muerto -> no Vivo"
+	when
+		$ser: Ser()
+		Muerto(sujeto == $ser)
+		$vivoSer: Vivo(sujeto == $ser)
+	then
+		delete($vivoSer);
+		System.out.println("No vive " + $ser.getNombre());
+end
+
+rule "No muerto -> vivo"
+	when
+		$ser: Ser()
+		not(Muerto(sujeto == $ser))
+		not(Vivo(sujeto == $ser))
+	then
+		modify($ser){setMatado_por(null);}
+		insert(new Vivo($ser));
+		System.out.println("Vive " + $ser.getNombre());
+end
+
+rule "Apresado -> No libre"
+	when
+		$ser: Ser()
+		Apresado(sujeto == $ser)
+		$libreSer: Libre(sujeto == $ser)
+	then
+		modify($ser){setLiberado_por(null);}
+		delete($libreSer);
+		System.out.println("Ya no es libre " + $ser.getNombre());
+end
+
+rule "No apresado -> libre"
+	when
+		$ser: Ser()
+		not(Apresado(sujeto == $ser))
+		not(Libre(sujeto == $ser))
+	then
+		modify($ser){setApresado_por(null);}
+		insert(new Libre($ser));
+		System.out.println("Ahora es libre " + $ser.getNombre());
+end
+
+
 rule "Enojado Poseidon con Casio -> Libera a Ceto"
     //include attributes such as "salience" here...
     when
         //conditions
         $casiopea: Mortal(nombre == "Casiopea")
+        Vivo(sujeto == $casiopea)
         $ceto: Criatura(nombre == "Ceto")
-        not(Muerto(sujeto == $ceto))
+        Vivo(sujeto == $ceto)
         $poseidon: DiosMayor(nombre == "Poseidon", enojado_con contains $casiopea)
         $presoCeto: Apresado(sujeto == $ceto)
     then
         //actions
-        insert(new Libre($ceto));
+        //insert(new Libre($ceto));
         delete($presoCeto);
-        modify($ceto){setLiberado_por($poseidon), setApresado_por(null);}
+        modify($ceto){setLiberado_por($poseidon);}
         modify($poseidon){addLiberado($ceto);}
 		System.out.println("Ceto ha sido liberado por Poseidón");
 end
@@ -66,16 +111,14 @@ end
 rule "Ceto liberado -> Andromeda apresada."
 	when
 		$ceto: CriaturaMitologica(nombre == "Ceto")
-		not(Muerto(sujeto == $ceto))
-		$libreCeto: Libre(sujeto == $ceto)
+		Vivo(sujeto == $ceto)
+		Libre(sujeto == $ceto)
 		$andromeda: Ser(nombre == "Andromeda")
+		Vivo(sujeto == $andromeda)
+		Libre(sujeto == $andromeda)
 	then
-		List<Ser> presosCeto = $ceto.getHa_apresado_a();
-		presosCeto.add($andromeda);
-		modify($ceto){setHa_apresado_a(presosCeto);}
-		
-		modify($andromeda){setLiberado_por(null), setApresado_por($ceto);}
-		
+		modify($ceto){addPrisionero($andromeda);}
+		modify($andromeda){setApresado_por($ceto);}
 		insert(new Apresado($andromeda));
 		System.out.println("Andrómeda ha sido apresada por Ceto");
 end
@@ -84,10 +127,11 @@ rule "Favor de Hades -> Casco de Hades"
 	when
 		$casco: Objeto(nombre == "Casco de Hades")
 		$hades: DiosMayor(nombre == "Hades", tiene contains $casco)
+		Vivo(sujeto == $hades)
 		$h: Heroe(tiene_el_favor_de contains $hades)
+		Vivo(sujeto == $h)
 	then
 		modify($h){addObjeto($casco);}
-		
 		modify($hades){quitarObjeto($casco);}
 		System.out.println("Gracias al favor de Hades, " + $h.getNombre() + " ha" +
 			" conseguido el Casco de Hades");			
@@ -97,7 +141,9 @@ rule "Favor de Atenea -> Escudo de Atenea"
 	when
 		$escudo: Objeto(nombre == "Escudo de Bronce")
 		$atenea: DiosMayor(nombre == "Atenea", tiene contains $escudo)
+		Vivo(sujeto == $atenea)
 		$h: Heroe(tiene_el_favor_de contains $atenea)
+		Vivo(sujeto == $h)
 	then
 		modify($h){addObjeto($escudo);}
 		modify($atenea){quitarObjeto($escudo);}
@@ -109,7 +155,9 @@ rule "Favor Hefesto -> Espada"
 	when
 		$espada: ObjetoMitologico(nombre == "Espada Indestructible")
 		$hefesto: DiosMayor(nombre == "Hefesto", tiene contains $espada)
+		Vivo(sujeto == $hefesto)
 		$h: Heroe(tiene_el_favor_de contains $hefesto)
+		Vivo(sujeto == $h)
 	then
 		modify($h){addObjeto($espada);}
 		modify($hefesto){quitarObjeto($espada);}
@@ -121,7 +169,9 @@ rule "Favor Hermes -> Hoz"
 	when
 		$hoz: Objeto(nombre == "Hoz de Acero")
 		$hermes: DiosMayor(nombre == "Hermes", tiene contains $hoz)
-		$h: Heroe(tiene_el_favor_de contains $hermes)	
+		Vivo(sujeto == $hermes)
+		$h: Heroe(tiene_el_favor_de contains $hermes)
+		Vivo(sujeto == $h)	
 	then
 		modify($h){addObjeto($hoz)}
 		modify($hermes){quitarObjeto($hoz)}
@@ -132,11 +182,16 @@ end
 rule "Favores de Hermes, Atenea y Hades -> localiza Grayas"
 	when
 		$hermes: DiosMayor(nombre == "Hermes")
+		Vivo(sujeto == $hermes)
 		$atenea: DiosMayor(nombre == "Atenea")
+		Vivo(sujeto == $atenea)
 		$hades: DiosMayor(nombre == "Hades")
+		Vivo(sujeto == $hades)
 		$grayas: DiosMenor(nombre == "Grayas")
+		Vivo(sujeto == $grayas)
 		$h: Heroe(tiene_localizado_a not contains $grayas, tiene_el_favor_de contains $hermes, tiene_el_favor_de contains $atenea,
 			tiene_el_favor_de  contains $hades)
+		Vivo(sujeto == $h)
 	then
 		modify($h){addLocalizado($grayas);}
 		System.out.println($h.getNombre() + " ha localizado a las Grayas");
@@ -146,8 +201,14 @@ rule "Localiza Grayas -> roba ojo"
 	when
 		$ojo: Objeto(nombre == "Ojo Grayas")
 		$grayas: DiosMenor(nombre == "Grayas", tiene contains $ojo)
+		Vivo(sujeto == $grayas)
 		$ninfas: DiosMenor(nombre == "Ninfas")
+		Vivo(sujeto == $ninfas)
 		$h: Heroe(tiene_localizado_a contains $grayas, tiene_localizado_a not contains $ninfas)
+		Vivo(sujeto == $h
+		
+		
+		)
 	then
 		modify($h){addObjeto($ojo);}
 		modify($grayas){quitarObjeto($ojo);}

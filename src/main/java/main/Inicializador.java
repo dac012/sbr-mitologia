@@ -12,6 +12,8 @@ import conceptos.capacidades.Reflectante;
 import conceptos.capacidades.Vuelo;
 import conceptos.estados.Apresado;
 import conceptos.estados.Estado;
+import conceptos.estados.Libre;
+import conceptos.estados.Vivo;
 import conceptos.objetos.Objeto;
 import conceptos.objetos.ObjetoMitologico;
 import conceptos.objetos.ObjetoNormal;
@@ -82,8 +84,13 @@ public class Inicializador {
     			reflectanteEscudo, volarSandalias);
     	
     	// Estados
-    	Apresado apresCeto = new Apresado(ceto);
+    	seres.stream().forEach(ser -> {
+    		if(ser != ceto) estados.add(new Libre(ser));
+    		estados.add(new Vivo(ser));
+    	});
     	
+    	Apresado apresCeto = new Apresado(ceto);
+        
     	Collections.addAll(estados, apresCeto);
     	
     	// Relaciones entre conceptos.

@@ -195,6 +195,11 @@ public abstract class Ser {
 		ha_liberado_a.add(ser);
 	}
 	
+	public void addPrisionero(Ser ser)
+	{
+		ha_apresado_a.add(ser);
+	}
+	
 	public void eliminarPrisionero(Ser ser)
 	{
 		ha_apresado_a.remove(ser);

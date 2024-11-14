@@ -54,6 +54,5 @@ public class Main {
     	
     	inicio.stream().forEach(hecho -> kSession.insert(hecho));
     	kSession.fireAllRules();
-    	//peo
 	}
 }

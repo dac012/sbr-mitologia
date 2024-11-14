@@ -32,10 +32,16 @@ public class Main {
     	 */
     	List<Object> inicio = Inicializador.inicializar(); 
     	
+    	Mortal casiopea = (Mortal)Inicializador.getInstanciaNombre("Casiopea", inicio);
+    	Dios poseidon = (Dios)Inicializador.getInstanciaNombre("Poseidon", inicio);    	
     	Mortal perseo = (Mortal) Inicializador.getInstanciaNombre("Perseo", inicio);
     	Dios atenea = (Dios) Inicializador.getInstanciaNombre("Atenea", inicio);
     	Dios hades = (Dios) Inicializador.getInstanciaNombre("Hades", inicio);
     	Dios hermes = (Dios) Inicializador.getInstanciaNombre("Hermes", inicio);
+    	
+    	// Enojo Pos -> Casio.
+    	casiopea.addEnojado(poseidon);
+    	poseidon.addMortalQueEnoja(casiopea);
     	
     	perseo.addDiosConFavor(atenea);
     	atenea.addMortalFavorecido(perseo);

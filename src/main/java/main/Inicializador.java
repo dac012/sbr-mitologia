@@ -95,10 +95,6 @@ public class Inicializador {
     	
     	// Relaciones entre conceptos.
     	
-    	// Enojo Pos -> Casio.
-    	casiopea.addEnojado(poseidon);
-    	poseidon.addMortalQueEnoja(casiopea);
-    	
     	// Perseo hijo de Zeus y Danae.
     	perseo.addPadre(zeus);
     	zeus.addHijo(perseo);

@@ -1,0 +1,241 @@
+//created on: 14 nov 2024
+package rule1
+
+//list any import classes here.
+import conceptos.seres.*;
+import conceptos.estados.*;
+import conceptos.objetos.*;
+import conceptos.capacidades.*;
+import java.util.*;
+
+//declare any global variables here
+
+/*
+ESTRUCTURA REGLA
+
+rule ""
+	when
+	
+	then
+	
+end
+
+*/
+
+/*
+rule "Dime seres"
+	when
+		$o: Ser()
+	then
+		System.out.println("Ser " + $o.getNombre());
+end
+
+rule "Dime objetos"
+	when
+		$o: Objeto()
+	then
+		System.out.println("Objeto " + $o.getNombre());
+end
+
+rule "Dime estados"
+	when
+		$o: Estado()
+	then
+		System.out.println("Estado " + $o.getClass().getName() + ", sujeto " + $o.getSujeto().getNombre());
+end
+*/
+
+rule "Enojado Poseidon con Casio -> Libera a Ceto"
+    //include attributes such as "salience" here...
+    when
+        //conditions
+        $casiopea: Mortal(nombre == "Casiopea")
+        $ceto: Criatura(nombre == "Ceto")
+        not(Muerto(sujeto == $ceto))
+        $poseidon: DiosMayor(nombre == "Poseidon", enojado_con contains $casiopea)
+        $presoCeto: Apresado(sujeto == $ceto)
+    then
+        //actions
+        insert(new Libre($ceto));
+        delete($presoCeto);
+        modify($ceto){setLiberado_por($poseidon), setApresado_por(null);}
+        modify($poseidon){addLiberado($ceto);}
+		System.out.println("Ceto ha sido liberado por Poseidón");
+end
+
+rule "Ceto liberado -> Andromeda apresada."
+	when
+		$ceto: CriaturaMitologica(nombre == "Ceto")
+		not(Muerto(sujeto == $ceto))
+		$libreCeto: Libre(sujeto == $ceto)
+		$andromeda: Ser(nombre == "Andromeda")
+	then
+		List<Ser> presosCeto = $ceto.getHa_apresado_a();
+		presosCeto.add($andromeda);
+		modify($ceto){setHa_apresado_a(presosCeto);}
+		
+		modify($andromeda){setLiberado_por(null), setApresado_por($ceto);}
+		
+		insert(new Apresado($andromeda));
+		System.out.println("Andrómeda ha sido apresada por Ceto");
+end
+
+rule "Favor de Hades -> Casco de Hades"
+	when
+		$casco: Objeto(nombre == "Casco de Hades")
+		$hades: DiosMayor(nombre == "Hades", tiene contains $casco)
+		$h: Heroe(tiene_el_favor_de contains $hades)
+	then
+		modify($h){addObjeto($casco);}
+		
+		modify($hades){quitarObjeto($casco);}
+		System.out.println("Gracias al favor de Hades, " + $h.getNombre() + " ha" +
+			" conseguido el Casco de Hades");			
+end
+
+rule "Favor de Atenea -> Escudo de Atenea"
+	when
+		$escudo: Objeto(nombre == "Escudo de Bronce")
+		$atenea: DiosMayor(nombre == "Atenea", tiene contains $escudo)
+		$h: Heroe(tiene_el_favor_de contains $atenea)
+	then
+		modify($h){addObjeto($escudo);}
+		modify($atenea){quitarObjeto($escudo);}
+		System.out.println("Gracias al favor de Atenea, " + $h.getNombre() + " ha" +
+			" conseguido el Escudo de Bronce");
+end
+
+rule "Favor Hefesto -> Espada"
+	when
+		$espada: ObjetoMitologico(nombre == "Espada Indestructible")
+		$hefesto: DiosMayor(nombre == "Hefesto", tiene contains $espada)
+		$h: Heroe(tiene_el_favor_de contains $hefesto)
+	then
+		modify($h){addObjeto($espada);}
+		modify($hefesto){quitarObjeto($espada);}
+		System.out.println("Gracias al favor de Hefesto, " + $h.getNombre() + " ha" +
+			" conseguido la Espada Indestructible");
+end
+
+rule "Favor Hermes -> Hoz"
+	when
+		$hoz: Objeto(nombre == "Hoz de Acero")
+		$hermes: DiosMayor(nombre == "Hermes", tiene contains $hoz)
+		$h: Heroe(tiene_el_favor_de contains $hermes)	
+	then
+		modify($h){addObjeto($hoz)}
+		modify($hermes){quitarObjeto($hoz)}
+		System.out.println("Gracias al favor de Hermes, " + $h.getNombre() + " ha" +
+			" conseguido las Sandalias Aladas");
+end
+
+rule "Favores de Hermes, Atenea y Hades -> localiza Grayas"
+	when
+		$hermes: DiosMayor(nombre == "Hermes")
+		$atenea: DiosMayor(nombre == "Atenea")
+		$hades: DiosMayor(nombre == "Hades")
+		$grayas: DiosMenor(nombre == "Grayas")
+		$h: Heroe(tiene_localizado_a not contains $grayas, tiene_el_favor_de contains $hermes, tiene_el_favor_de contains $atenea,
+			tiene_el_favor_de  contains $hades)
+	then
+		modify($h){addLocalizado($grayas);}
+		System.out.println($h.getNombre() + " ha localizado a las Grayas");
+end
+
+rule "Localiza Grayas -> roba ojo"
+	when
+		$ojo: Objeto(nombre == "Ojo Grayas")
+		$grayas: DiosMenor(nombre == "Grayas", tiene contains $ojo)
+		$ninfas: DiosMenor(nombre == "Ninfas")
+		$h: Heroe(tiene_localizado_a contains $grayas, tiene_localizado_a not contains $ninfas)
+	then
+		modify($h){addObjeto($ojo);}
+		modify($grayas){quitarObjeto($ojo);}
+		System.out.println($h.getNombre() + " ha robado a las Grayas su ojo");
+end
+
+rule "Devuelve ojo -> localiza Ninfas"
+	when
+		$ojo: Objeto(nombre == "Ojo Grayas")
+		$grayas: DiosMenor(nombre == "Grayas", tiene not contains $ojo)
+		$ninfas: DiosMenor(nombre == "Ninfas")
+		$h: Heroe(tiene_localizado_a contains $grayas, tiene contains $ojo,
+			tiene_localizado_a not contains $ninfas)
+	then
+		modify($h){quitarObjeto($ojo), addLocalizado($ninfas);}
+		modify($grayas){addObjeto($ojo);}
+		System.out.println("Las Grayas recuperan su ojo");
+		System.out.println($h.getNombre() + " tiene localizado a las Ninfas");
+end
+
+rule "Localizadas ninfas -> consigue objetos"
+	when
+		$zurron: ObjetoMitologico(nombre == "Zurron Magico")
+		$sandalias: ObjetoMitologico(nombre == "Sandalias Aladas")
+		$ninfas: DiosMenor(nombre == "Ninfas", tiene contains $zurron, tiene contains $sandalias)
+		$h: Heroe(tiene_localizado_a contains $ninfas) 
+	then
+		modify($h){addObjeto($zurron), addObjeto($sandalias);}
+		modify($ninfas){quitarObjeto($zurron), quitarObjeto($sandalias);}
+		System.out.println("Al tener localizadas a las Ninfas, " + $h.getNombre() + " consigue " +
+			"el Zurrón Mágico y las Sandalias Aladas");
+end
+
+rule "Tiene sandalias, vuelo, algo cortante y algo reflectante -> mata a Medusa"
+	when
+		$h: Heroe($inventario := tiene)
+		$capacidadVuelo: Vuelo($inventario contains objeto)
+		$capacidadCorte: Corte($inventario contains objeto)
+		$capacidadReflectante: Reflectante($inventario contains objeto)
+		$medusa: CriaturaMitologica(nombre == "Medusa")
+		not(Muerto(sujeto == $medusa))
+	then
+		insert(new Muerto($medusa));
+		ObjetoMitologico cabezaMedusa = new ObjetoMitologico("Cabeza de Medusa"); 
+		insert(cabezaMedusa);
+		insert(new Petrificar(cabezaMedusa));
+		modify($h){addVictima($medusa)}
+		modify($medusa){setMatado_por($h)}
+		System.out.println($h.getNombre() + " ha matado a Medusa");
+end
+
+rule "Tiene zurrón y mata a Medusa -> consigue cabeza."
+	when
+		$zurron: Objeto(nombre == "Zurron Magico")
+		$ser: Ser(tiene contains $zurron)
+		$cabezaMedusa: ObjetoMitologico(nombre == "Cabeza de Medusa")
+		$medusa: CriaturaMitologica(nombre == "Medusa", matado_por == $ser)
+		Muerto(sujeto == $medusa)
+		not(Ser(tiene contains $cabezaMedusa))
+	then
+		modify($ser){addObjeto($cabezaMedusa);}
+		System.out.println($ser.getNombre() + " consigue la cabeza de Medusa");
+end
+
+rule "Tiene algo petrificante -> mata a Ceto"
+	when
+		$ser: Ser($inventario := tiene)
+		Petrificar($inventario contains objeto)
+		$ceto: CriaturaMitologica(nombre == "Ceto")
+		not(Muerto(sujeto == $ceto))
+	then
+		insert(new Muerto($ceto));
+		modify($ser){addVictima($ceto);}
+		modify($ceto){setMatado_por($ser);}
+		System.out.println($ser.getNombre() + " ha matado a Ceto");
+end
+
+rule "Ceto muerto y tiene alguien apresado -> el asesino de ceto lo libera"
+	when
+		$ser: Ser()
+		$preso: Apresado(sujeto == $ser)
+		$ceto: CriaturaMitologica(nombre == "Ceto", ha_apresado_a contains $ser, $asesino := matado_por)
+		Muerto(sujeto == $ceto)
+	then
+		modify($asesino){addLiberado($ser);}
+		modify($ser){setApresado_por(null), setLiberado_por($asesino);}
+		modify($ceto){eliminarPrisionero($ser);}
+		insert(new Libre($ser));
+		delete($preso);
+		System.out.println($ser.getNombre() + " ha sido liberado por " + $asesino.getNombre());		
+end

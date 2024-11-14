@@ -17,7 +17,7 @@ import conceptos.seres.Humano;
 import conceptos.seres.Mortal;
 import conceptos.seres.Semidios;
 import conceptos.seres.Ser;
-// hola
+
 public class Main {
 
 	public static void main(String[] args) 

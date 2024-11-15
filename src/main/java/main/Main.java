@@ -1,14 +1,21 @@
 package main;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 
+import conceptos.capacidades.Petrificar;
 import conceptos.objetos.Objeto;
 import conceptos.objetos.ObjetoMitologico;
 import conceptos.objetos.ObjetoNormal;
+import conceptos.relaciones.EnojadoCon;
+import conceptos.relaciones.Favorece;
+import conceptos.relaciones.Libera;
+import conceptos.relaciones.Posee;
+import conceptos.seres.Criatura;
 import conceptos.seres.CriaturaMitologica;
 import conceptos.seres.Dios;
 import conceptos.seres.DiosMayor;
@@ -39,18 +46,20 @@ public class Main {
     	Dios hades = (Dios) Inicializador.getInstanciaNombre("Hades", inicio);
     	Dios hermes = (Dios) Inicializador.getInstanciaNombre("Hermes", inicio);
     	
-    	// Enojo Pos -> Casio.
-    	casiopea.addEnojado(poseidon);
-    	poseidon.addMortalQueEnoja(casiopea);
+    	EnojadoCon poseiCasio = new EnojadoCon(poseidon, casiopea);
+    	Favorece ateneaPerseo = new Favorece(atenea, perseo);
+    	Favorece hadesPerseo = new Favorece(hades, perseo);
+    	Favorece hermesPerseo = new Favorece(hermes, perseo);
     	
-    	perseo.addDiosConFavor(atenea);
-    	atenea.addMortalFavorecido(perseo);
+    	Collections.addAll(inicio, poseiCasio, ateneaPerseo, hadesPerseo, hermesPerseo);   
     	
-    	perseo.addDiosConFavor(hades);
-    	hades.addMortalFavorecido(perseo);
-    	
-    	perseo.addDiosConFavor(hermes);
-    	hermes.addMortalFavorecido(perseo);
+    	/*
+    	 * Prueba
+    	 */
+    	Criatura ceto = (Criatura)Inicializador.getInstanciaNombre("Ceto", inicio);
+    	Objeto escoba = new ObjetoNormal("Escobita de Ceto");
+    	Posee poseeCetoEscoba = new Posee(ceto, escoba);
+    	Collections.addAll(inicio, escoba, poseeCetoEscoba);
     	
     	inicio.stream().forEach(hecho -> kSession.insert(hecho));
     	kSession.fireAllRules();

@@ -10,13 +10,13 @@ import conceptos.capacidades.Invisibilidad;
 import conceptos.capacidades.Petrificar;
 import conceptos.capacidades.Reflectante;
 import conceptos.capacidades.Vuelo;
-import conceptos.estados.Apresado;
-import conceptos.estados.Estado;
-import conceptos.estados.Libre;
-import conceptos.estados.Vivo;
 import conceptos.objetos.Objeto;
 import conceptos.objetos.ObjetoMitologico;
 import conceptos.objetos.ObjetoNormal;
+import conceptos.relaciones.Apresa;
+import conceptos.relaciones.Padre;
+import conceptos.relaciones.Posee;
+import conceptos.relaciones.Relacion;
 import conceptos.seres.Criatura;
 import conceptos.seres.CriaturaMitologica;
 import conceptos.seres.Dios;
@@ -36,8 +36,8 @@ public class Inicializador {
 		List<Ser> seres = new LinkedList<>();
 		// 2. Objetos.
     	List<Objeto> objetos = new LinkedList<>();
-    	// 3. Estados.
-    	List<Estado> estados = new LinkedList<>();
+    	// 3. Relaciones.
+    	List<Relacion> relaciones = new LinkedList<>();
     	// 4. Capacidades.
     	List<Capacidad> capacidades = new LinkedList<>();
 		
@@ -82,38 +82,26 @@ public class Inicializador {
     	
     	Collections.addAll(capacidades, cascoHadesInvi, petrificarMedusa, corteHoz, corteEspada,
     			reflectanteEscudo, volarSandalias);
-    	
-    	// Estados
-    	seres.stream().forEach(ser -> {
-    		if(ser != ceto) estados.add(new Libre(ser));
-    		estados.add(new Vivo(ser));
-    	});
-    	
-    	Apresado apresCeto = new Apresado(ceto);
-        
-    	Collections.addAll(estados, apresCeto);
-    	
+    	    	
     	// Relaciones entre conceptos.
+    	Apresa poseidonCeto = new Apresa(poseidon, ceto);
+        Padre zeusPerseo = new Padre(zeus, perseo);
+        Padre danaePerseo = new Padre(danae, perseo);
+        Posee grayasOjo = new Posee(grayas, ojoGrayas);
+        Posee grayasDiente = new Posee(grayas, dienteGrayas);
+        Posee ninfasZurron = new Posee(ninfas, zurron);
+        Posee ninfasSandalias = new Posee(ninfas, sandaliasAladas);
+        Posee hermesHoz = new Posee(hermes, hoz);
+        Posee hadesCasco = new Posee(hades, cascoHades);
+        Posee hefestoEspada = new Posee(hefesto, espadaIndestructible);
+        Posee ateneaEscudo = new Posee(atenea, escudoBronce);
     	
-    	// Perseo hijo de Zeus y Danae.
-    	perseo.addPadre(zeus);
-    	zeus.addHijo(perseo);
-    	perseo.addPadre(danae);
-    	danae.addHijo(perseo);
-    	
-    	// Pertenencias.
-    	grayas.addObjeto(ojoGrayas);
-    	grayas.addObjeto(dienteGrayas);
-    	ninfas.addObjeto(zurron);
-    	ninfas.addObjeto(sandaliasAladas);
-    	hades.addObjeto(cascoHades);
-    	hermes.addObjeto(hoz);
-    	hefesto.addObjeto(espadaIndestructible);
-    	atenea.addObjeto(escudoBronce);
+    	Collections.addAll(relaciones, poseidonCeto, zeusPerseo, danaePerseo, grayasOjo, grayasDiente, ninfasZurron, ninfasSandalias, hermesHoz, hadesCasco,
+    			hefestoEspada, ateneaEscudo);
     	
     	seres.stream().forEach(ser -> instancias.add(ser));
     	objetos.stream().forEach(objeto -> instancias.add(objeto));
-    	estados.stream().forEach(estado -> instancias.add(estado));
+    	relaciones.stream().forEach(relacion -> instancias.add(relacion));
     	capacidades.stream().forEach(capacidad -> instancias.add(capacidad));
     	
     	return instancias;

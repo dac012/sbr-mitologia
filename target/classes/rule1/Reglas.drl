@@ -3,7 +3,7 @@ package rule1
 
 //list any import classes here.
 import conceptos.seres.*;
-import conceptos.estados.*;
+import conceptos.relaciones.*;
 import conceptos.objetos.*;
 import conceptos.capacidades.*;
 import java.util.*;
@@ -22,130 +22,62 @@ end
 
 */
 
-/*
-rule "Dime seres"
+rule "Si lo mata -> se queda con sus objetos"
 	when
-		$o: Ser()
+		$asesino: Ser()
+		Mata(sujeto == $asesino, $asesinado: receptor)
+		$posesionAsesinado: Posee(sujeto == $asesinado, $obj: objeto)
 	then
-		System.out.println("Ser " + $o.getNombre());
-end
-
-rule "Dime objetos"
-	when
-		$o: Objeto()
-	then
-		System.out.println("Objeto " + $o.getNombre());
-end
-
-rule "Dime estados"
-	when
-		$o: Estado()
-	then
-		System.out.println("Estado " + $o.getClass().getName() + ", sujeto " + $o.getSujeto().getNombre());
-end
-*/
-
-rule "Tiene algo petrificante -> mata a Ceto"
-	when
-		$heroe: Heroe($inventario := tiene) and Vivo(sujeto == $heroe)
-		(Petrificar($inventario contains objeto) or Petrificar(sujeto == $heroe))
-		$ceto: CriaturaMitologica(nombre == "Ceto") and $vivoCeto : Vivo(sujeto == $ceto)
-	then
-		insert(new Muerto($ceto));
-		delete($vivoCeto);
-		modify($heroe){addVictima($ceto);}
-		modify($ceto){setMatado_por($heroe);}
-		System.out.println($heroe.getNombre() + " ha matado a Ceto");
-end
-
-rule "Muerto -> no Vivo"
-	when
-		$ser: Ser()
-		Muerto(sujeto == $ser)
-		$vivoSer: Vivo(sujeto == $ser)
-	then
-		delete($vivoSer);
-		System.out.println("No vive " + $ser.getNombre());
-end
-
-rule "No muerto -> vivo"
-	when
-		$ser: Ser()
-		not(Muerto(sujeto == $ser))
-		not(Vivo(sujeto == $ser))
-	then
-		modify($ser){setMatado_por(null);}
-		insert(new Vivo($ser));
-		System.out.println("Vive " + $ser.getNombre());
-end
-
-rule "Apresado -> No libre"
-	when
-		$ser: Ser()
-		Apresado(sujeto == $ser)
-		$libreSer: Libre(sujeto == $ser)
-	then
-		modify($ser){setLiberado_por(null);}
-		delete($libreSer);
-		System.out.println("Ya no es libre " + $ser.getNombre());
-end
-
-rule "No apresado -> libre"
-	when
-		$ser: Ser()
-		not(Apresado(sujeto == $ser))
-		not(Libre(sujeto == $ser))
-	then
-		modify($ser){setApresado_por(null);}
-		insert(new Libre($ser));
-		System.out.println("Ahora es libre " + $ser.getNombre());
+		insert(new Posee($asesino, $obj));
+		delete($posesionAsesinado);
+		System.out.println("Al haber matado a " +
+			$asesinado.getNombre() + ", " +
+			$asesino.getNombre() + " consigue " + $obj.getNombre());
 end
 
 
 rule "Enojado Poseidon con Casio -> Libera a Ceto"
     //include attributes such as "salience" here...
     when
-        //conditions
-        $casiopea: Mortal(nombre == "Casiopea")
-        Vivo(sujeto == $casiopea)
-        $ceto: Criatura(nombre == "Ceto")
-        Vivo(sujeto == $ceto)
-        $poseidon: DiosMayor(nombre == "Poseidon", enojado_con contains $casiopea)
-        $presoCeto: Apresado(sujeto == $ceto)
+        $casiopea: Mortal(nombre == "Casiopea", !muerto)
+        $poseidon: DiosMayor(nombre == "Poseidon", !muerto) and EnojadoCon(sujeto == $poseidon, receptor == $casiopea)
+        $ceto: Criatura(nombre == "Ceto", !muerto) and $presoCeto: Apresa(sujeto == $poseidon, receptor == $ceto)
     then
-        //actions
-        //insert(new Libre($ceto));
         delete($presoCeto);
-        modify($ceto){setLiberado_por($poseidon);}
-        modify($poseidon){addLiberado($ceto);}
+        insert(new Libera($poseidon, $ceto));
 		System.out.println("Ceto ha sido liberado por Poseidón");
 end
 
 rule "Ceto liberado -> Andromeda apresada."
 	when
-		$ceto: CriaturaMitologica(nombre == "Ceto")
-		Vivo(sujeto == $ceto)
-		Libre(sujeto == $ceto)
-		$andromeda: Ser(nombre == "Andromeda")
-		Vivo(sujeto == $andromeda)
-		Libre(sujeto == $andromeda)
+		$ceto: CriaturaMitologica(nombre == "Ceto", !muerto) and Libera(receptor == $ceto)
+		$andromeda: Ser(nombre == "Andromeda", !muerto) and not(Apresa(receptor == $andromeda))
+		not(Libera(receptor == $andromeda))
 	then
-		modify($ceto){addPrisionero($andromeda);}
-		modify($andromeda){setApresado_por($ceto);}
-		insert(new Apresado($andromeda));
+		insert(new Apresa($ceto, $andromeda));
 		System.out.println("Andrómeda ha sido apresada por Ceto");
 end
+
+rule "Ceto liberado -> Andromeda apresada y deja de estar liberada."
+	when
+		$ceto: CriaturaMitologica(nombre == "Ceto", !muerto) and Libera(receptor == $ceto)
+		$andromeda: Ser(nombre == "Andromeda", !muerto) and not(Apresa(receptor == $andromeda))
+		$liberadaAndro: Libera(receptor == $andromeda)
+	then
+		delete($liberadaAndro);
+		insert(new Apresa($ceto, $andromeda));
+		System.out.println("Andrómeda ha sido apresada por Ceto y deja de estar liberada");
+end
+
 
 rule "Favor de Hades -> Casco de Hades"
 	when
 		$casco: Objeto(nombre == "Casco de Hades")
-		$hades: DiosMayor(nombre == "Hades", tiene contains $casco)
-		Vivo(sujeto == $hades)
-		$h: Heroe(tiene_el_favor_de contains $hades)
-		Vivo(sujeto == $h)
+		$hades: DiosMayor(nombre == "Hades", !muerto) and $poseeCascoHades: Posee(sujeto == $hades, objeto == $casco)
+		$h: Heroe() and Favorece(sujeto == $hades, receptor == $h)		
 	then
-		modify($h){addObjeto($casco);}
-		modify($hades){quitarObjeto($casco);}
+		insert(new Posee($h, $casco));
+		delete($poseeCascoHades);
 		System.out.println("Gracias al favor de Hades, " + $h.getNombre() + " ha" +
 			" conseguido el Casco de Hades");			
 end
@@ -153,13 +85,12 @@ end
 rule "Favor de Atenea -> Escudo de Atenea"
 	when
 		$escudo: Objeto(nombre == "Escudo de Bronce")
-		$atenea: DiosMayor(nombre == "Atenea", tiene contains $escudo)
-		Vivo(sujeto == $atenea)
-		$h: Heroe(tiene_el_favor_de contains $atenea)
-		Vivo(sujeto == $h)
+		$atenea: DiosMayor(nombre == "Atenea", !muerto)
+		$poseeAteneaEscudo: Posee(sujeto == $atenea, objeto == $escudo)
+		$h: Heroe(!muerto) and Favorece(sujeto == $atenea, receptor == $h)
 	then
-		modify($h){addObjeto($escudo);}
-		modify($atenea){quitarObjeto($escudo);}
+		insert(new Posee($h, $escudo));
+		delete($poseeAteneaEscudo);
 		System.out.println("Gracias al favor de Atenea, " + $h.getNombre() + " ha" +
 			" conseguido el Escudo de Bronce");
 end
@@ -167,13 +98,12 @@ end
 rule "Favor Hefesto -> Espada"
 	when
 		$espada: ObjetoMitologico(nombre == "Espada Indestructible")
-		$hefesto: DiosMayor(nombre == "Hefesto", tiene contains $espada)
-		Vivo(sujeto == $hefesto)
-		$h: Heroe(tiene_el_favor_de contains $hefesto)
-		Vivo(sujeto == $h)
+		$hefesto: DiosMayor(nombre == "Hefesto", !muerto)
+		$poseeHefestoEsp: Posee(sujeto == $hefesto, objeto == $espada)
+		$h: Heroe(!muerto) and Favorece(sujeto == $hefesto, receptor == $h)
 	then
-		modify($h){addObjeto($espada);}
-		modify($hefesto){quitarObjeto($espada);}
+		insert(new Posee($h, $espada));
+		delete($poseeHefestoEsp);
 		System.out.println("Gracias al favor de Hefesto, " + $h.getNombre() + " ha" +
 			" conseguido la Espada Indestructible");
 end
@@ -181,101 +111,127 @@ end
 rule "Favor Hermes -> Hoz"
 	when
 		$hoz: Objeto(nombre == "Hoz de Acero")
-		$hermes: DiosMayor(nombre == "Hermes", tiene contains $hoz)
-		Vivo(sujeto == $hermes)
-		$h: Heroe(tiene_el_favor_de contains $hermes)
-		Vivo(sujeto == $h)	
+		$hermes: DiosMayor(nombre == "Hermes", !muerto)
+		$poseeHermesHoz: Posee(sujeto == $hermes, objeto == $hoz)
+		$h: Heroe(!muerto) and Favorece(sujeto == $hermes, receptor == $h)
 	then
-		modify($h){addObjeto($hoz)}
-		modify($hermes){quitarObjeto($hoz)}
+		insert(new Posee($h, $hoz));
+		delete($poseeHermesHoz);
 		System.out.println("Gracias al favor de Hermes, " + $h.getNombre() + " ha" +
-			" conseguido las Sandalias Aladas");
+			" conseguido la hoz de acero");
 end
 
 rule "Favores de Hermes, Atenea y Hades -> localiza Grayas"
 	when
-		$hermes: DiosMayor(nombre == "Hermes") and Vivo(sujeto == $hermes)
-		$atenea: DiosMayor(nombre == "Atenea") and Vivo(sujeto == $atenea)
-		$hades: DiosMayor(nombre == "Hades") and Vivo(sujeto == $hades)
-		$grayas: DiosMenor(nombre == "Grayas") and Vivo(sujeto == $grayas)
-		$h: Heroe(tiene_localizado_a not contains $grayas, tiene_el_favor_de contains $hermes, tiene_el_favor_de contains $atenea,
-			tiene_el_favor_de  contains $hades) and Vivo(sujeto == $h)
+		$hermes: DiosMayor(nombre == "Hermes", !muerto)
+		$atenea: DiosMayor(nombre == "Atenea", !muerto)
+		$hades: DiosMayor(nombre == "Hades", !muerto)
+		$grayas: DiosMenor(nombre == "Grayas")
+		$h: Heroe(!muerto) and not(Localiza(sujeto == $h, receptor == $grayas))
+		Favorece(sujeto == $hermes, receptor == $h)
+		Favorece(sujeto == $atenea, receptor == $h)
+		Favorece(sujeto == $hades, receptor == $h)
 	then
-		modify($h){addLocalizado($grayas);}
+		insert(new Localiza($h, $grayas));
 		System.out.println($h.getNombre() + " ha localizado a las Grayas");
 end
 
 rule "Localiza Grayas -> roba ojo"
 	when
 		$ojo: Objeto(nombre == "Ojo Grayas")
-		$grayas: DiosMenor(nombre == "Grayas", tiene contains $ojo)
-		$ninfas: DiosMenor(nombre == "Ninfas")
-		$h: Heroe(tiene_localizado_a contains $grayas, tiene_localizado_a not contains $ninfas)
-		Vivo(sujeto == $grayas) and Vivo(sujeto == $h) and Vivo(sujeto == $ninfas)
+		$grayas: DiosMenor(nombre == "Grayas", !muerto)
+		$poseenOjoGrayas:= Posee(sujeto == $grayas, objeto == $ojo)
+		$h: Heroe(!muerto) and Localiza(sujeto == $h, receptor == $grayas)
+		(Posee(sujeto == $h, $ob: objeto) and Invisibilidad(objeto == $ob)) or Invisibilidad(sujeto == $h)
+		$ninfas:= DiosMenor(nombre == "Ninfas")
+		not(Localiza(sujeto == $h, receptor == $ninfas))
 	then
-		modify($h){addObjeto($ojo);}
-		modify($grayas){quitarObjeto($ojo);}
+		insert(new Posee($h, $ojo));
+		delete($poseenOjoGrayas);
 		System.out.println($h.getNombre() + " ha robado a las Grayas su ojo");
 end
 
 rule "Devuelve ojo -> localiza Ninfas"
 	when
 		$ojo: Objeto(nombre == "Ojo Grayas")
-		$grayas: DiosMenor(nombre == "Grayas", tiene not contains $ojo)
+		$grayas: DiosMenor(nombre == "Grayas", !muerto)
 		$ninfas: DiosMenor(nombre == "Ninfas")
-		$h: Heroe(tiene_localizado_a contains $grayas, tiene contains $ojo,
-			tiene_localizado_a not contains $ninfas)
+		$h: Heroe(!muerto)
+		not(Localiza(sujeto == $h, receptor == $ninfas) or Posee(sujeto == $grayas, objeto == $ojo))
+		$poseeHeroeOjo:= Posee(sujeto == $h, objeto == $ojo)
 	then
-		modify($h){quitarObjeto($ojo), addLocalizado($ninfas);}
-		modify($grayas){addObjeto($ojo);}
+		insert(new Posee($grayas, $ojo));
+		delete($poseeHeroeOjo);
+		insert(new Localiza($h, $ninfas));
 		System.out.println("Las Grayas recuperan su ojo");
-		System.out.println($h.getNombre() + " tiene localizado a las Ninfas");
+		System.out.println($h.getNombre() + " localiza a las Ninfas");
 end
 
 rule "Localizadas ninfas -> consigue objetos"
 	when
-		$zurron: ObjetoMitologico(nombre == "Zurron Magico")
-		$sandalias: ObjetoMitologico(nombre == "Sandalias Aladas")
-		$ninfas: DiosMenor(nombre == "Ninfas", tiene contains $zurron, tiene contains $sandalias)
-		$h: Heroe(tiene_localizado_a contains $ninfas) 
+		$ninfas: DiosMenor(nombre == "Ninfas", !muerto)
+		$h: Heroe(!muerto) and Localiza(sujeto == $h, receptor == $ninfas)
+		$posesionNinfas: Posee(sujeto == $ninfas, $obj: objeto)
 	then
-		modify($h){addObjeto($zurron), addObjeto($sandalias);}
-		modify($ninfas){quitarObjeto($zurron), quitarObjeto($sandalias);}
-		System.out.println("Al tener localizadas a las Ninfas, " + $h.getNombre() + " consigue " +
-			"el Zurrón Mágico y las Sandalias Aladas");
+		insert(new Posee($h, $obj));
+		delete($posesionNinfas);
+		System.out.println("Por localizar a las Ninfas, " + $h.getNombre() + " posee " + $obj.getNombre());
 end
 
 rule "Tiene sandalias, vuelo, algo cortante y algo reflectante -> mata a Medusa"
 	when
-		$h: Heroe($inventario := tiene)
-		$capacidadVuelo: Vuelo($inventario contains objeto)
-		$capacidadCorte: Corte($inventario contains objeto)
-		$capacidadReflectante: Reflectante($inventario contains objeto)
-		$medusa: CriaturaMitologica(nombre == "Medusa")
-		not(Muerto(sujeto == $medusa))
+		$h: Heroe(!muerto)
+		//Posee(sujeto == $h, $ob1: objeto) and Vuelo(objeto == $ob1) 
+		Posee(sujeto == $h, $ob2: objeto) and Corte(objeto == $ob2) //or Corte(sujeto == $h)
+		Posee(sujeto == $h, $ob3: objeto) and Reflectante(objeto == $ob3)// or Reflectante(sujeto == $h)
+		$medusa: CriaturaMitologica(nombre == "Medusa", !muerto)
 	then
-		insert(new Muerto($medusa));
-		ObjetoMitologico cabezaMedusa = new ObjetoMitologico("Cabeza de Medusa"); 
+		// MUERTE MEDUSA
+		modify($medusa){setMuerto(true);}
+		insert(new Mata($h, $medusa));
+		// Se inserta la cabeza de Medusa como objeto.
+		ObjetoMitologico cabezaMedusa = new ObjetoMitologico("Cabeza de Medusa");
 		insert(cabezaMedusa);
-		insert(new Petrificar(cabezaMedusa));
-		modify($h){addVictima($medusa)}
-		modify($medusa){setMatado_por($h)}
+		insert(new Petrificar(cabezaMedusa));		
 		System.out.println($h.getNombre() + " ha matado a Medusa");
 end
 
-rule "Tiene zurrón y mata a Medusa -> consigue cabeza."
+rule "Si alguien ha matado a Medusa -> consigue su cabeza"
 	when
-		$zurron: Objeto(nombre == "Zurron Magico")
-		$heroe: Heroe(tiene contains $zurron)
-		$cabezaMedusa: ObjetoMitologico(nombre == "Cabeza de Medusa")
-		$medusa: CriaturaMitologica(nombre == "Medusa", matado_por == $heroe)
-		Muerto(sujeto == $medusa)
-		not(Heroe(tiene contains $cabezaMedusa))
+		$s: Ser(!muerto)
+		$medusa: CriaturaMitologica(nombre == "Medusa")
+		Mata(sujeto == $s, receptor == $medusa)
+		$zurron: ObjetoMitologico(nombre == "Zurron Magico")
+		Posee(sujeto == $s, objeto == $zurron)
+		$cabezaMedusa: ObjetoMitologico(nombre == "Cabeza de Medusa");
 	then
-		modify($heroe){addObjeto($cabezaMedusa);}
-		System.out.println($heroe.getNombre() + " consigue la cabeza de Medusa");
+		insert(new Posee($s, $cabezaMedusa));
+		System.out.println($s.getNombre() + " consigue la cabeza de Medusa");
 end
 
+rule "Tiene algo petrificante -> mata a Ceto"
+	when
+		$heroe: Heroe()
+		Posee(sujeto == $heroe, $petrificante: objeto) and Petrificar(objeto == $petrificante)
+		$ceto: CriaturaMitologica(nombre == "Ceto")
+	then
+		insert(new Mata($heroe, $ceto));
+		modify($ceto){setMuerto(true);}
+		System.out.println($heroe.getNombre() + " ha matado a Ceto");
+end
+
+rule "Si matas a alguien -> liberas a sus prisioneros"
+	when
+		$s: Ser()
+		Mata(sujeto == $s, $asesinado: receptor)
+		$prision: Apresa(sujeto == $asesinado, $apresado: receptor)
+	then
+		insert(new Libera($s, $apresado));
+		delete($prision);
+		System.out.println($s.getNombre() + " ha liberado a " + $apresado.getNombre());
+end
+
+/*
 rule "Ceto muerto y tiene alguien apresado -> el asesino de ceto lo libera"
 	when
 		$ser: Ser()
@@ -290,3 +246,4 @@ rule "Ceto muerto y tiene alguien apresado -> el asesino de ceto lo libera"
 		delete($preso);
 		System.out.println($ser.getNombre() + " ha sido liberado por " + $asesino.getNombre());		
 end
+*/

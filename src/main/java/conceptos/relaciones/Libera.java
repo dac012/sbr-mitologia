@@ -9,4 +9,9 @@ public class Libera extends Accion {
 		super(sujeto, receptor);
 	}
 	
+	@Override
+	public String toString() 
+	{
+		return(getSujeto().toString() + " ha liberado a " + getReceptor().toString());
+	}
 }

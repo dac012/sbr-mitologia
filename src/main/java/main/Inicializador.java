@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import conceptos.capacidades.Capacidad;
-import conceptos.capacidades.Corte;
+import conceptos.capacidades.Letal;
 import conceptos.capacidades.Invisibilidad;
 import conceptos.capacidades.Petrificar;
 import conceptos.capacidades.Reflectante;
@@ -14,6 +14,7 @@ import conceptos.objetos.Objeto;
 import conceptos.objetos.ObjetoMitologico;
 import conceptos.objetos.ObjetoNormal;
 import conceptos.relaciones.Apresa;
+import conceptos.relaciones.Localiza;
 import conceptos.relaciones.Padre;
 import conceptos.relaciones.Posee;
 import conceptos.relaciones.Relacion;
@@ -26,6 +27,7 @@ import conceptos.seres.Heroe;
 import conceptos.seres.Humano;
 import conceptos.seres.Mortal;
 import conceptos.seres.Ser;
+import conceptos.seres.TipoCriatura;
 
 public class Inicializador {
 	
@@ -43,13 +45,13 @@ public class Inicializador {
 		
     	Heroe perseo = new Heroe("Perseo");
     	DiosMayor zeus = new DiosMayor("Zeus");
-    	CriaturaMitologica ceto = new CriaturaMitologica("Ceto");
+    	CriaturaMitologica ceto = new CriaturaMitologica("Ceto", TipoCriatura.MARINA);
     	DiosMayor poseidon = new DiosMayor("Poseidon");
     	Mortal andromeda = new Humano("Andromeda");
     	Mortal casiopea = new Humano("Casiopea");
     	DiosMayor hades = new DiosMayor("Hades");
     	Mortal danae = new Humano("Danae");
-    	Criatura medusa = new CriaturaMitologica("Medusa");
+    	Criatura medusa = new CriaturaMitologica("Medusa", TipoCriatura.TERRESTRE);
     	Dios grayas = new DiosMenor("Grayas");
     	Dios ninfas = new DiosMenor("Ninfas");
     	Dios hermes = new DiosMayor("Hermes");
@@ -75,8 +77,8 @@ public class Inicializador {
     	// Capacidades.
     	Capacidad cascoHadesInvi = new Invisibilidad(cascoHades);
     	Capacidad petrificarMedusa = new Petrificar(medusa);
-    	Capacidad corteHoz = new Corte(hoz);
-    	Capacidad corteEspada = new Corte(espadaIndestructible);
+    	Capacidad corteHoz = new Letal(hoz);
+    	Capacidad corteEspada = new Letal(espadaIndestructible);
     	Capacidad reflectanteEscudo = new Reflectante(escudoBronce);
     	Capacidad volarSandalias = new Vuelo(sandaliasAladas);
     	
@@ -95,9 +97,15 @@ public class Inicializador {
         Posee hadesCasco = new Posee(hades, cascoHades);
         Posee hefestoEspada = new Posee(hefesto, espadaIndestructible);
         Posee ateneaEscudo = new Posee(atenea, escudoBronce);
-    	
+    	Padre casiopeaMadreAndrom = new Padre(casiopea, andromeda);
+        Localiza ateneaLocGrayas = new Localiza(atenea, grayas);
+        Localiza hadesLocGrayas = new Localiza(hades, grayas);
+        Localiza hermesLocGrayas = new Localiza(hermes, grayas);
+    	Localiza grayasLocNinfas = new Localiza(grayas, ninfas);
+        
     	Collections.addAll(relaciones, poseidonCeto, zeusPerseo, danaePerseo, grayasOjo, grayasDiente, ninfasZurron, ninfasSandalias, hermesHoz, hadesCasco,
-    			hefestoEspada, ateneaEscudo);
+    			hefestoEspada, ateneaEscudo, casiopeaMadreAndrom, ateneaLocGrayas, hadesLocGrayas, hermesLocGrayas,
+    			grayasLocNinfas);
     	
     	seres.stream().forEach(ser -> instancias.add(ser));
     	objetos.stream().forEach(objeto -> instancias.add(objeto));

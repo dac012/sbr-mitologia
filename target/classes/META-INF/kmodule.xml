@@ -3,4 +3,8 @@
     <kbase name="Reglas" packages="rule1">
         <ksession name="ksession-rules-dsi"/>
     </kbase>
+
+	<kbase name="Reglas2" packages="rule2">
+        <ksession name="ksession-rules-dsi2"/>
+    </kbase>
 </kmodule>

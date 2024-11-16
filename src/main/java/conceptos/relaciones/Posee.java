@@ -20,5 +20,9 @@ public class Posee extends Relacion {
 	public void setObjeto(Objeto objeto) {
 		this.objeto = objeto;
 	}
-		
+
+	@Override
+	public String toString() {
+		return getSujeto().toString() + " tiene " + getObjeto().toString();
+	}
 }

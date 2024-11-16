@@ -9,4 +9,9 @@ public class Mata extends Accion {
 		super(sujeto, receptor);
 	}
 	
+	@Override
+	public String toString() 
+	{
+		return(getSujeto().toString() + " ha matado a " + getReceptor().toString());
+	}
 }

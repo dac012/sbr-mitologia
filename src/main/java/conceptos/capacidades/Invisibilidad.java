@@ -15,4 +15,10 @@ public class Invisibilidad extends Capacidad {
 		super(sujeto);
 	}
 	
+	@Override
+	public String toString() {
+		if(getSujeto() != null) return getSujeto().toString() + " tiene capacidad Invisibilidad";
+		return getObjeto().toString() + " tiene capacidad Invisibilidad"; 
+	}
+	
 }

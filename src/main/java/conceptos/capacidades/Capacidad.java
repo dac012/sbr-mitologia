@@ -26,5 +26,5 @@ public abstract class Capacidad {
 	public Ser getSujeto() {
 		return sujeto;
 	}
-		
+	
 }

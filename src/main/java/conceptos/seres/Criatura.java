@@ -2,9 +2,12 @@ package conceptos.seres;
 
 public abstract class Criatura extends Ser {
 	
-	public Criatura(String nombre)
+	TipoCriatura tipo;
+	
+	public Criatura(String nombre, TipoCriatura tipo)
 	{
 		super(nombre);
+		this.tipo = tipo;
 	}
 	
 }

@@ -181,8 +181,8 @@ end
 rule "Tiene sandalias, vuelo, algo cortante y algo reflectante -> mata a Medusa"
 	when
 		$h: Heroe(!muerto)
-		//Posee(sujeto == $h, $ob1: objeto) and Vuelo(objeto == $ob1) 
-		Posee(sujeto == $h, $ob2: objeto) and Corte(objeto == $ob2) //or Corte(sujeto == $h)
+		Posee(sujeto == $h, $ob1: objeto) and Vuelo(objeto == $ob1) 
+		Posee(sujeto == $h, $ob2: objeto) and CorLetaljeto == $ob2) //or CorLetaljeto == $h)
 		Posee(sujeto == $h, $ob3: objeto) and Reflectante(objeto == $ob3)// or Reflectante(sujeto == $h)
 		$medusa: CriaturaMitologica(nombre == "Medusa", !muerto)
 	then
@@ -212,7 +212,7 @@ end
 rule "Tiene algo petrificante -> mata a Ceto"
 	when
 		$heroe: Heroe()
-		Posee(sujeto == $heroe, $petrificante: objeto) and Petrificar(objeto == $petrificante)
+		(Posee(sujeto == $heroe, $petrificante: objeto) and Petrificar(objeto == $petrificante)) or Petrificar(sujeto == $heroe)
 		$ceto: CriaturaMitologica(nombre == "Ceto")
 	then
 		insert(new Mata($heroe, $ceto));
@@ -229,6 +229,45 @@ rule "Si matas a alguien -> liberas a sus prisioneros"
 		insert(new Libera($s, $apresado));
 		delete($prision);
 		System.out.println($s.getNombre() + " ha liberado a " + $apresado.getNombre());
+end
+
+// REGLA DE PRUEBA
+
+rule "Cuando Andromeda se libera, se descubre que Zeus es Padre de Kratos"
+	when
+		$andromeda: Ser(nombre == "Andromeda", !muerto)
+		$zeus: DiosMayor(nombre == "Zeus")
+		$kratos: Semidios(!muerto)
+		Libera(receptor == $andromeda)
+		not(Padre(sujeto == $zeus, receptor == $kratos))
+	then
+		insert(new Padre($zeus, $kratos));
+		System.out.println("Se descubre que " + $kratos.getNombre() + " es hijo de Zeus");
+end
+
+rule "Si Zeus es el padre de Kratos -> le entrega las espadas del caos"
+	when
+		$espadas: ObjetoMitologico(nombre == "Espadas del Caos") or $espadas: ObjetoMitologico(nombre == "Telas de Java Moradas" )
+		$zeus: DiosMayor(nombre == "Zeus") and $poseeZeusEspadas: Posee(sujeto == $zeus, objeto == $espadas)
+		$kratos: Semidios()
+		Padre(sujeto == $zeus, receptor == $kratos)
+	then
+		insert(new Posee($kratos, $espadas));
+		delete($poseeZeusEspadas);
+		System.out.println("Zeus le otorga las " + $espadas.getNombre() + " a " + $kratos.getNombre());
+end
+
+rule "Si tienes las espadas del Caos -> puedes matar cualquier cosa localizada"
+	when
+		$s: Ser(!muerto, nombre != "Zeus")
+		$espadasDelCaos: ObjetoMitologico(nombre == "Espadas del Caos") or $espadasDelCaos: ObjetoMitologico(nombre == "Telas de Java Moradas" )
+		Posee(sujeto == $s, objeto == $espadasDelCaos)
+		$cualquiera: Ser(!muerto)
+		Localiza(sujeto == $s, receptor == $cualquiera)
+	then
+		insert(new Mata($s, $cualquiera));
+		modify($cualquiera){setMuerto(true);}
+		System.out.println($cualquiera.getNombre() + " ha muerto a manos de " + $s.getNombre());
 end
 
 /*

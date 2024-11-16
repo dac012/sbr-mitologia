@@ -25,5 +25,10 @@ public abstract class Ser {
 
 	public String getNombre() {
 		return nombre;
-	}	
+	}
+	
+	@Override
+	public String toString() {
+		return nombre;
+	}
 }

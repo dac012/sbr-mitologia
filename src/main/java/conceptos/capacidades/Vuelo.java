@@ -15,4 +15,9 @@ public class Vuelo extends Capacidad {
 		super(sujeto);
 	}
 	
+	@Override
+	public String toString() {
+		if(getSujeto() != null) return getSujeto().toString() + " tiene capacidad Vuelo";
+		return getObjeto().toString() + " tiene capacidad Vuelo"; 
+	}
 }

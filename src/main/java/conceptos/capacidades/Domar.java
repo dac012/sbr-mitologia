@@ -15,4 +15,9 @@ public class Domar extends Capacidad {
 		super(sujeto);
 	}
 	
+	@Override
+	public String toString() {
+		if(getSujeto() != null) return getSujeto().toString() + " tiene capacidad Domar";
+		return getObjeto().toString() + " tiene capacidad Domar"; 
+	}
 }

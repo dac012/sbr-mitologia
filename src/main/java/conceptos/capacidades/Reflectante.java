@@ -15,4 +15,9 @@ public class Reflectante extends Capacidad{
 		super(sujeto);
 	}
 	
+	@Override
+	public String toString() {
+		if(getSujeto() != null) return getSujeto().toString() + " tiene capacidad Reflectante";
+		return getObjeto().toString() + " tiene capacidad Reflectante"; 
+	}
 }

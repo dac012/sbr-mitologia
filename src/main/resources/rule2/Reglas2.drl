@@ -1,0 +1,316 @@
+//created on: 15 nov 2024
+package rule2
+
+//list any import classes here.
+import conceptos.seres.*;
+import conceptos.relaciones.*;
+import conceptos.objetos.*;
+import conceptos.capacidades.*;
+import java.util.*;
+
+
+//declare any global variables here
+
+
+// // **************************REGLAS GENERALES************************** //
+
+/*
+rule "Informar localizados"
+	salience 10
+	//agenda-group "informacion"
+	when
+		Localiza($x:= sujeto, $y:= receptor)
+	then
+		System.out.println($x.getNombre() + " tiene localizado a " + $y.getNombre());
+end
+
+rule "Informar Posesiones"
+	salience 10
+	//agenda-group "informacion"
+	when
+		Posee($x:= sujeto, $y:= objeto)
+	then
+		System.out.println($x.getNombre() + " tiene en su posesión " + $y.getNombre());
+end
+
+rule "Informar muerte"
+	salience 10
+	//agenda-group "informacion"
+	when
+		Mata($x:= sujeto, $y:= receptor)
+	then
+		System.out.println($x.getNombre() + " ha matado a " + $y.getNombre());
+end
+
+rule "Informar liberación"
+	salience 10
+	//agenda-group "informacion"
+	when
+		Libera($x:= sujeto, $y:= receptor)
+	then
+		System.out.println($x.getNombre() + " ha liberado a " + $y.getNombre());
+end
+
+rule "Informar captura"
+	salience 10
+	//agenda-group "informacion"
+	when
+		Apresa($x:= sujeto, $y:= receptor)
+	then
+		System.out.println($x.getNombre() + " tiene apresado a " + $y.getNombre());
+end
+*/
+
+rule "Informar inicio"
+	salience 10
+	agenda-group "informacion"
+	when
+		$o: Object(!($o instanceof Ser), !($o instanceof Objeto))
+	then
+		System.out.println($o.toString());
+end
+
+rule "Si tu padre es Dios Mayor -> tienes su favor"
+	salience 10
+	agenda-group "generales"
+	when
+		$dios: DiosMayor()
+		$mortal: Mortal()
+		$relacionPadre: Padre(sujeto == $dios, receptor == $mortal)
+	then
+		Favorece favor = new Favorece($dios, $mortal);
+		insert(favor);
+		System.out.println($relacionPadre.toString() + ", por lo que " + favor.toString());
+end
+
+rule "Si tienes localizado a un muerto (que nadie haya matado) con objetos -> te puedes quedar sus objetos"
+	salience 10
+	agenda-group "generales"
+	when
+		$ser: Ser(!muerto)
+		$muerto: Ser(muerto) and not(Mata(receptor == $muerto))
+		$posesionMuerto: Posee(sujeto == $muerto, $obj:= objeto)
+		$localizado: Localiza(sujeto == $ser, receptor == $muerto)
+	then
+		Posee posee = new Posee($ser, $obj);
+		insert(posee);
+		delete($posesionMuerto);
+		System.out.println($localizado.toString() + "y " + $muerto.toString() + " esta muerto , por lo que " +
+			 posee.toString());
+end
+
+rule "x mata a y -> x tiene el inventario de y"
+	salience 10
+	agenda-group "generales"
+	when
+		$mata: Mata($asesino:= sujeto, $muerto:= receptor)
+		$posesionMuerto: Posee(sujeto == $muerto, $obj:= objeto)
+	then
+		insert(new Posee($asesino, $obj));
+		delete($posesionMuerto);
+		System.out.println($mata.toString() + ", por lo que " +
+			$asesino.toString() + " consigue " + $obj.toString());
+end
+
+rule "x tiene el Favor de un Dios -> x tiene su inventario"
+	salience 10
+	agenda-group "generales"
+    //include attributes such as "salience" here...
+    when
+        $favor: Favorece($dios:= sujeto, $mortal:= receptor)
+        $pos: Posee(sujeto == $dios, $obj:= objeto)
+    then
+        insert(new Posee($mortal, $obj));
+        delete($pos);
+        System.out.println($favor.toString() +	", por lo que " + 
+        	$mortal.toString() + " consigue " + $obj.toString());
+end
+
+// Voy a suponer que, cuando tres dioses te ofrecen un favor, puedes localizar aquellos que los 3 localizan.
+rule "x tiene favor de tres dioses que localizan a y -> x localiza a y"
+	salience 10
+	agenda-group "generales"
+	when
+		$mortal: Mortal()
+		Favorece($dios1:= sujeto, receptor == $mortal) and Localiza(sujeto == $dios1, $localizado:= receptor)
+		$dioses: List(size >= 2) from
+			accumulate(Favorece($dios:= sujeto, $dios != $dios1, receptor == $mortal) and Localiza(sujeto == $dios, receptor == $localizado); collectList($dios))		
+		not(Localiza(sujeto == $mortal, receptor == $localizado))
+	then
+		insert(new Localiza($mortal, $localizado));
+		System.out.println("Por tener el favor de " +
+			$dios1.getNombre() + ", " + ((Dios)$dioses.get(0)).getNombre() + "  y " + ((Dios)$dioses.get(1)).getNombre() + ", " + $mortal.getNombre() + " ha localizado a " +
+			$localizado.getNombre());
+end
+
+rule "Si matas a alguien -> liberas a sus prisioneros"
+	salience 10
+	agenda-group "generales"
+	when
+		$s: Ser()
+		$mata: Mata(sujeto == $s, $asesinado: receptor)
+		$prision: Apresa(sujeto == $asesinado, $apresado: receptor)
+	then
+		Libera libera = new Libera($s, $apresado);
+		insert(libera);
+		delete($prision);
+		System.out.println($mata.toString() + ", por lo que " + libera.toString());
+end
+
+// *************************************************************** //
+
+rule "Poseidón enojado con x -> Poseidon libera a Ceto"
+	salience 5
+	agenda-group "generales"
+    when
+        $pos: DiosMayor(nombre == "Poseidon", !muerto)
+        $ser: Ser(!muerto)
+        $enojadoPos: EnojadoCon(sujeto == $pos, receptor == $ser)
+        $ceto: CriaturaMitologica(nombre == "Ceto", !muerto)
+        $apres: Apresa(sujeto == $pos, receptor == $ceto)
+       	$otraCriatura: CriaturaMitologica(!muerto) and not(Libera(sujeto == $pos, receptor == $otraCriatura))
+    then
+        delete($apres);
+        Libera libera = new Libera($pos, $ceto);
+        insert(libera);
+		System.out.println($enojadoPos.toString() + ", por lo que " + libera.toString()); 
+end
+
+rule "Poseidón ha liberado una criatura marina y enojado con alguien libre -> la criatura marina lo apresa"
+	salience 5
+	agenda-group "generales"
+	when
+		$pos: DiosMayor(nombre == "Poseidon", !muerto)
+		$ceto: CriaturaMitologica(nombre == "Ceto", !muerto)
+		Libera(sujeto == $pos, receptor == $ceto)
+        $ser: Ser(!muerto)
+        $enojo: EnojadoCon(sujeto == $pos, receptor == $ser)
+        $hijo: Ser(!muerto) and Padre(sujeto == $ser, receptor == $hijo)
+        not(Apresa(receptor == $hijo))
+	then
+		Apresa apresa = new Apresa($ceto, $hijo);
+		insert(apresa);
+		System.out.println($enojo.toString() + ", por lo que " + apresa.toString());
+end
+
+rule "x Localiza a las Grayas y Grayas localiza a alguien que no localiza x -> x roba ojo"
+	salience 5
+	agenda-group "generales"
+	when
+		$h: Heroe(!muerto)
+		(Posee(sujeto == $h, $obj:= objeto) and Invisibilidad(objeto == $obj)) or Invisibilidad(sujeto == $h)
+		$grayas: DiosMenor(nombre == "Grayas")
+		$localiza: Localiza(sujeto == $h, receptor == $grayas)
+		$ojo: Objeto(nombre == "Ojo Grayas")
+		$poseenOjoGrayas: Posee(sujeto == $grayas, objeto == $ojo)
+		Localiza(sujeto == $grayas, $alguien:= receptor) and not(Localiza(sujeto == $h, receptor == $alguien))
+	then
+		insert(new Posee($h, $ojo));
+		delete($poseenOjoGrayas);
+		System.out.println($localiza.toString() + ", por lo que " +
+			$h.toString() + " ha robado a " + $grayas.toString() + " " + $ojo.toString());
+end
+
+rule "x devuelve ojo a las Grayas -> x tiene localizados los que localizan las Grayas"
+	salience 5
+	agenda-group "generales"
+	when
+		$ojo: Objeto(nombre == "Ojo Grayas")
+		$grayas: DiosMenor(nombre == "Grayas", !muerto)
+		$h: Heroe(!muerto)
+		Localiza(sujeto == $grayas, $localizado:= receptor)
+		$poseeHeroeOjo:= Posee(sujeto == $h, objeto == $ojo)
+	then
+		insert(new Posee($grayas, $ojo));
+		delete($poseeHeroeOjo);
+		Localiza localiza = new Localiza($h, $localizado);
+		insert(localiza);
+		System.out.println($h.toString() + " devuelve a " + $grayas.toString() + " " + $ojo.toString());
+		System.out.println(localiza.toString());
+end
+
+rule "x tiene objetos letal, vuelo, y reflectante -> mata a Medusa"
+	salience 5
+	agenda-group "generales"
+	when
+		$h: Heroe(!muerto)
+		$pos1: Posee(sujeto == $h, $ob1: objeto) and $vuelo: Vuelo(objeto == $ob1) 
+		$pos2: Posee(sujeto == $h, $ob2: objeto) and $letal: Letal(objeto == $ob2) //or Corte(sujeto == $h)
+		$pos3: Posee(sujeto == $h, $ob3: objeto) and $reflectante: Reflectante(objeto == $ob3)// or Reflectante(sujeto == $h)
+		$medusa: CriaturaMitologica(nombre == "Medusa", !muerto)
+	then
+		modify($medusa){setMuerto(true);}
+		Mata mata = new Mata($h, $medusa); 
+		insert(mata);
+		System.out.println($pos1.toString() + ", " + $pos2.toString() + " y " + $pos3.toString() + ", con " +
+			$vuelo.toString() + ", " + $letal.toString() + " y " + $reflectante.toString() + ", por lo que " +
+			mata.toString());
+end
+
+rule "Localizadas ninfas -> consigue objetos"
+	salience 5
+	agenda-group "generales"
+	when
+		$ninfas: DiosMenor(nombre == "Ninfas", !muerto)
+		$h: Heroe(!muerto) and $localiza: Localiza(sujeto == $h, receptor == $ninfas)
+		$posesionNinfas: Posee(sujeto == $ninfas, $obj: objeto)
+	then
+		Posee posee = new Posee($h, $obj);
+		insert(posee);
+		delete($posesionNinfas);
+		System.out.println($localiza.toString() + ", por lo que " + posee.toString());
+end
+
+rule "Si Medusa ha muerto -> aparece su cabeza"
+	salience 5
+	agenda-group "generales"
+	when
+		$medusa: CriaturaMitologica(nombre == "Medusa", muerto)
+	then
+		ObjetoMitologico cabezaMedusa = new ObjetoMitologico("Cabeza de Medusa");
+		insert(cabezaMedusa);
+		insert(new Petrificar(cabezaMedusa));
+		//System.out.println(cabezaMedusa.toString());
+end
+
+rule "Tiene algo petrificante -> mata a Ceto"
+	salience 5
+	agenda-group "generales"
+	when
+		$heroe: Heroe(!muerto)
+		(Posee(sujeto == $heroe, $petrificante: objeto) and Petrificar(objeto == $petrificante)) or Petrificar(sujeto == $heroe)
+		$ceto: CriaturaMitologica(nombre == "Ceto", !muerto)
+	then
+		Mata mata = new Mata($heroe, $ceto);
+		insert(mata);
+		modify($ceto){setMuerto(true);}
+		System.out.println(mata.toString());
+end
+
+rule "Si alguien ha matado a Medusa y no tiene contenedor -> muere"
+	salience 5
+	agenda-group "generales"
+	when
+		$cabezaMedusa: ObjetoMitologico(nombre == "Cabeza de Medusa")
+		Posee($ser:= sujeto, objeto == $cabezaMedusa)
+		not(Contenedor($objeto:= objeto) and Posee(sujeto == $ser, objeto == $objeto))
+	then
+		modify($ser){setMuerto(true);}
+		System.out.println($ser.toString() + " no posee ningun objeto contenedor y tiene " +
+			"la Cabeza de Medusa, por lo que muere");
+end
+
+rule "Si alguien ha matado a Medusa -> consigue su cabeza"
+	salience 5
+	agenda-group "generales"
+	when
+		$s: Ser(!muerto)
+		$medusa: CriaturaMitologica(nombre == "Medusa")
+		Mata(sujeto == $s, receptor == $medusa)
+		$cabezaMedusa: ObjetoMitologico(nombre == "Cabeza de Medusa") and not(Posee(objeto == $cabezaMedusa));
+	then
+		Posee posee = new Posee($s, $cabezaMedusa);
+		insert(posee);
+		System.out.println(posee.toString());
+		//System.out.println($s.getNombre() + " consigue la cabeza de Medusa");
+end

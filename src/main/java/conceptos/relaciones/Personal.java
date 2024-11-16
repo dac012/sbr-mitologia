@@ -19,5 +19,5 @@ public abstract class Personal extends Relacion {
 	public void setReceptor(Ser receptor) {
 		this.receptor = receptor;
 	}
-	
+		
 }

@@ -20,4 +20,18 @@ public abstract class Accion extends Relacion {
 		this.receptor = receptor;
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == null)
+			return false;
+		if(this == obj)
+			return true;
+		if(!(obj instanceof Accion))
+			return false;
+		
+		Accion objeto = (Accion)obj;
+		return objeto.getSujeto().equals(this.getSujeto())
+				&& objeto.getReceptor().equals(this.getReceptor());
+	}
+	
 }

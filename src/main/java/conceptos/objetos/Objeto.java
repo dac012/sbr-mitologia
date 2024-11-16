@@ -28,5 +28,8 @@ public abstract class Objeto {
 		this.poseido_por = poseido_por;
 	}
 	
-	
+	@Override
+	public String toString() {
+		return nombre;
+	}
 }

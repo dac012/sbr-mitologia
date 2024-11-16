@@ -20,5 +20,5 @@ public abstract class Divina extends Relacion {
 	public void setReceptor(Mortal receptor) {
 		this.receptor = receptor;
 	}
-		
+	
 }

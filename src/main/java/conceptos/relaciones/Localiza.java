@@ -9,4 +9,9 @@ public class Localiza extends Accion {
 		super(sujeto, receptor);
 	}
 	
+	@Override
+	public String toString() {
+		return getSujeto() + " ha localizado a " + getReceptor();
+	}
+	
 }

@@ -9,4 +9,9 @@ public class Apresa extends Accion {
 		super(sujeto, receptor);
 	}
 	
+	@Override
+	public String toString() 
+	{
+		return(getSujeto().toString() + " ha apresado a " + getReceptor().toString());
+	}
 }

@@ -2,9 +2,9 @@ package conceptos.seres;
 
 public class CriaturaNormal extends Criatura {
 	
-	public CriaturaNormal(String nombre)
+	public CriaturaNormal(String nombre, TipoCriatura tipo)
 	{
-		super(nombre);
+		super(nombre, tipo);
 	}
 	
 }

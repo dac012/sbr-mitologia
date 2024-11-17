@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <kmodule xmlns="http://jboss.org/kie/6.0.0/kmodule">
-    <kbase name="Reglas" packages="rule1">
-        <ksession name="ksession-rules-dsi"/>
-    </kbase>
-
 	<kbase name="Reglas2" packages="rule2">
         <ksession name="ksession-rules-dsi2"/>
     </kbase>

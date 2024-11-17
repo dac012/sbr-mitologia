@@ -22,7 +22,7 @@ end
 
 */
 
-rule "Si lo mata -> se queda con sus objetos"
+rule "Si un ser mata a otro ser -> se queda con sus objetos"
 	when
 		$asesino: Ser()
 		Mata(sujeto == $asesino, $asesinado: receptor)
@@ -36,8 +36,7 @@ rule "Si lo mata -> se queda con sus objetos"
 end
 
 
-rule "Enojado Poseidon con Casio -> Libera a Ceto"
-    //include attributes such as "salience" here...
+rule "Enojado Poseidon con un ser -> Libera a Ceto"
     when
         $casiopea: Mortal(nombre == "Casiopea", !muerto)
         $poseidon: DiosMayor(nombre == "Poseidon", !muerto) and EnojadoCon(sujeto == $poseidon, receptor == $casiopea)

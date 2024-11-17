@@ -70,6 +70,17 @@ rule "Informar inicio"
 		System.out.println($o.toString());
 end
 
+rule "Si alguien que tenia el favor de un Dios ahora tiene su enojo -> ya no tiene el favor"
+	salience 10
+	agenda-group "generales"
+	when
+		$enojo: EnojadoCon($dios:= sujeto, $mortal:= receptor)
+		$favor: Favorece(sujeto == $dios, receptor == $mortal)
+	then
+		delete($favor);
+		System.out.println($enojo.toString() +", por lo que no " + $favor.toString());
+end
+
 rule "Si tu padre es Dios Mayor -> tienes su favor"
 	salience 10
 	agenda-group "generales"
@@ -313,4 +324,48 @@ rule "Si alguien ha matado a Medusa -> consigue su cabeza"
 		insert(posee);
 		System.out.println(posee.toString());
 		//System.out.println($s.getNombre() + " consigue la cabeza de Medusa");
+end
+
+
+rule "Si matas al minotauro -> ahora sus prisioneros estan apresados por Minos"
+	salience 10
+	agenda-group "generales"
+	when
+		$s: Ser()
+		$mata: Mata(sujeto == $s, $asesinado:= receptor)
+		$prision: Apresa(sujeto == $asesinado, $apresado:= receptor)
+		$minotauro: CriaturaMitologica(nombre == "Minotauro", $minotauro == $asesinado)
+		$minos: Ser(nombre == "Minos")
+	then
+		Apresa apresa = new Apresa($minos, $asesinado);
+		insert(apresa);
+		System.out.println($mata.toString() + ", por lo que " + apresa.toString());
+end
+
+rule "Si apresado por Minos, Minotauro muerto y tienes hilo -> dejas de estar apresado"
+	when
+		$s: Ser()
+		$minotauro: CriaturaMitologica(nombre == "Minotauro", muerto)
+		$hilo: ObjetoMitologico(nombre == "Hilo Imperdible")
+		$posee: Posee(sujeto == $s, objeto == $hilo) or
+			(Libera(sujeto == $s, $liberado:= receptor) and Posee(sujeto == $liberado, objeto == $hilo)) 
+		$minos: Ser(nombre == "Minos")
+		$apresado: Apresa(sujeto == $minos, receptor == $s)
+	then
+		delete($apresado);
+		System.out.println("Ya no " + $apresado.toString());
+end
+
+rule "Si apresado por Minos, Minotauro muerto y tu liberador libre -> dejas de estar apresado"
+	when
+		$minos: Ser(nombre == "Minos")
+		$s: Ser() and $apresado: Apresa(sujeto == $minos, receptor == $s)
+		$liberadoMinotauro: Libera($liberador:= sujeto, receptor == $s)
+		not(Apresa(sujeto == $minos, receptor == $liberador))
+	then
+		delete($apresado);
+		delete($liberadoMinotauro);
+		Libera liberadoMinos = new Libera($liberador, $s);
+		System.out.println($liberador.toString() + "esta libre y " + $liberadoMinotauro.toString() + ", por lo que " +
+			"ya no " + $apresado.toString());		
 end

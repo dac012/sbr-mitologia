@@ -17,10 +17,12 @@ import conceptos.objetos.Objeto;
 import conceptos.objetos.ObjetoMitologico;
 import conceptos.objetos.ObjetoNormal;
 import conceptos.relaciones.Accion;
+import conceptos.relaciones.Apresa;
 import conceptos.relaciones.EnojadoCon;
 import conceptos.relaciones.Favorece;
 import conceptos.relaciones.Libera;
 import conceptos.relaciones.Localiza;
+import conceptos.relaciones.Padre;
 import conceptos.relaciones.Posee;
 import conceptos.seres.Criatura;
 import conceptos.seres.CriaturaMitologica;
@@ -31,6 +33,7 @@ import conceptos.seres.Humano;
 import conceptos.seres.Mortal;
 import conceptos.seres.Semidios;
 import conceptos.seres.Ser;
+import conceptos.seres.TipoCriatura;
 
 public class Main {
 
@@ -44,52 +47,38 @@ public class Main {
     	/*
     	 * Cargar los hechos iniciales.
     	 */
-    	List<Object> inicio = Inicializador.inicializar(); 
+    	Inicializador ini = new Inicializador();
     	
-    	Mortal casiopea = (Mortal)Inicializador.getInstanciaNombre("Casiopea", inicio);
-    	Dios poseidon = (Dios)Inicializador.getInstanciaNombre("Poseidon", inicio);    	
-    	Mortal perseo = (Mortal) Inicializador.getInstanciaNombre("Perseo", inicio);
-    	Dios atenea = (Dios) Inicializador.getInstanciaNombre("Atenea", inicio);
-    	Dios hades = (Dios) Inicializador.getInstanciaNombre("Hades", inicio);
-    	Dios hermes = (Dios) Inicializador.getInstanciaNombre("Hermes", inicio);
+    	List<Object> inicio = ini.getInstancias();
     	
-    	EnojadoCon poseiCasio = new EnojadoCon(poseidon, casiopea);
-    	Favorece ateneaPerseo = new Favorece(atenea, perseo);
-    	Favorece hadesPerseo = new Favorece(hades, perseo);
-    	Favorece hermesPerseo = new Favorece(hermes, perseo);
+    	DiosMayor poseidon = (DiosMayor)ini.get("Poseidon");
+    	DiosMayor atenea = (DiosMayor)ini.get("Atenea");
+    	DiosMayor hermes = (DiosMayor)ini.get("Hermes");
+    	DiosMayor hades = (DiosMayor)ini.get("Hades");
+    	Mortal casiopea = (Mortal)ini.get("Casiopea");
+    	Heroe perseo = (Heroe)ini.get("Perseo");
+    	Mortal andromeda = (Mortal)ini.get("Andromeda");
     	
-    	Collections.addAll(inicio, poseiCasio, ateneaPerseo, hadesPerseo, hermesPerseo);
+    	inicio.add(new EnojadoCon(poseidon, casiopea));
+    	inicio.add(new Favorece(atenea, perseo));
+    	inicio.add(new Favorece(hades, perseo));
+    	inicio.add(new Favorece(hermes, perseo));
     	
-    	/*
-    	 * Prueba
-    	 */
-    	Criatura ceto = (Criatura)Inicializador.getInstanciaNombre("Ceto", inicio);
-    	Objeto escoba = new ObjetoNormal("Escobita de Ceto");
-    	Posee poseeCetoEscoba = new Posee(ceto, escoba);
-    	Collections.addAll(inicio, escoba, poseeCetoEscoba);
-    	
-    	/*
-    	 * Inserción objetivo.
-    	 */
-    	Ser andromeda = (Ser)Inicializador.getInstanciaNombre("Andromeda", inicio);
-    	Libera apresaPerseo = new Libera(perseo, andromeda);
-    	insertarObjetivo(kSession, apresaPerseo);
+    	Libera liberaPerseoAndro = new Libera(perseo, andromeda);
+    	insertarObjetivo(kSession, liberaPerseoAndro);
     	
     	inicio.stream().forEach(hecho -> kSession.insert(hecho));
-    	AgendaGroup informacion = kSession.getAgenda().getAgendaGroup("informacion");
-//    	AgendaGroup historia = kSession.getAgenda().getAgendaGroup("historia");
-    	AgendaGroup generales = kSession.getAgenda().getAgendaGroup("generales");
-//    	
-    	informacion.setFocus();
-    	System.out.println("\nInicialmente...\n");
+    	
+    	AgendaGroup info = kSession.getAgenda().getAgendaGroup("informacion");
+    	AgendaGroup general = kSession.getAgenda().getAgendaGroup("generales");
+    	
+    	System.out.println("\n\t\tInicialmente...");
+    	info.setFocus();
     	kSession.fireAllRules();
-//    	
-//    	System.out.println("\nY es por ello que...\n");
-//    	informacion.setFocus();
-//    	historia.setFocus();
-    	generales.setFocus();
-    	System.out.println("\nEs por esto que...\n");
-    	kSession.fireUntilHalt();
+    	
+    	System.out.println("\n\t\tY en un momento dado...");
+    	general.setFocus();
+    	kSession.fireAllRules();
     	kSession.dispose();
 	}
 	

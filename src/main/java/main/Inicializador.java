@@ -1,8 +1,11 @@
 package main;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 import conceptos.capacidades.Capacidad;
 import conceptos.capacidades.Letal;
@@ -14,6 +17,8 @@ import conceptos.objetos.Objeto;
 import conceptos.objetos.ObjetoMitologico;
 import conceptos.objetos.ObjetoNormal;
 import conceptos.relaciones.Apresa;
+import conceptos.relaciones.EnojadoCon;
+import conceptos.relaciones.Favorece;
 import conceptos.relaciones.Localiza;
 import conceptos.relaciones.Padre;
 import conceptos.relaciones.Posee;
@@ -31,8 +36,10 @@ import conceptos.seres.TipoCriatura;
 
 public class Inicializador {
 	
-	public static List<Object> inicializar() {
-		List<Object> instancias = new LinkedList<>();
+	List<Object> instancias = null;
+	
+	public Inicializador() {
+		instancias = new LinkedList<>();
 		
 		// 1. Seres que aparecen.
 		List<Ser> seres = new LinkedList<>();
@@ -111,11 +118,14 @@ public class Inicializador {
     	objetos.stream().forEach(objeto -> instancias.add(objeto));
     	relaciones.stream().forEach(relacion -> instancias.add(relacion));
     	capacidades.stream().forEach(capacidad -> instancias.add(capacidad));
-    	
-    	return instancias;
+	}
+		
+	public List<Object> getInstancias()
+	{
+		return new LinkedList<>(instancias);
 	}
 	
-	public static Object getInstanciaNombre(String nombre, List<Object> instancias)
+	public Object get(String nombre)
 	{
 		for(Object instancia: instancias)
 		{

@@ -10,4 +10,7 @@ public abstract class Criatura extends Ser {
 		this.tipo = tipo;
 	}
 	
+	public void setTipoCriatura(TipoCriatura tipo) {
+		this.tipo = tipo;
+	}
 }

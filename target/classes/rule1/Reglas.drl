@@ -181,8 +181,8 @@ end
 rule "Tiene sandalias, vuelo, algo cortante y algo reflectante -> mata a Medusa"
 	when
 		$h: Heroe(!muerto)
-		Posee(sujeto == $h, $ob1: objeto) and Vuelo(objeto == $ob1) 
-		Posee(sujeto == $h, $ob2: objeto) and CorLetaljeto == $ob2) //or CorLetaljeto == $h)
+		Posee(sujeto == $h, $ob1: objeto) and Vuelo(objeto == $ob1) //or Vuelo(sujeto == $h)
+		Posee(sujeto == $h, $ob2: objeto) and Letal(objeto == $ob2) //or Letal(sujeto == $h)
 		Posee(sujeto == $h, $ob3: objeto) and Reflectante(objeto == $ob3)// or Reflectante(sujeto == $h)
 		$medusa: CriaturaMitologica(nombre == "Medusa", !muerto)
 	then

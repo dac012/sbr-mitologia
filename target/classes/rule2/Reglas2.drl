@@ -212,7 +212,7 @@ rule "x Localiza a las Grayas y Grayas localiza a alguien que no localiza x -> x
 		(Posee(sujeto == $h, $obj:= objeto) and Invisibilidad(objeto == $obj)) or Invisibilidad(sujeto == $h)
 		$grayas: DiosMenor(nombre == "Grayas")
 		$localiza: Localiza(sujeto == $h, receptor == $grayas)
-		$ojo: Objeto(nombre == "Ojo Grayas")
+		$ojo: Objeto(nombre == "OjoGrayas")
 		$poseenOjoGrayas: Posee(sujeto == $grayas, objeto == $ojo)
 		Localiza(sujeto == $grayas, $alguien:= receptor) and not(Localiza(sujeto == $h, receptor == $alguien))
 	then
@@ -226,7 +226,7 @@ rule "x devuelve ojo a las Grayas -> x tiene localizados los que localizan las G
 	salience 5
 	agenda-group "generales"
 	when
-		$ojo: Objeto(nombre == "Ojo Grayas")
+		$ojo: Objeto(nombre == "OjoGrayas")
 		$grayas: DiosMenor(nombre == "Grayas", !muerto)
 		$h: Heroe(!muerto)
 		Localiza(sujeto == $grayas, $localizado:= receptor)
@@ -278,7 +278,7 @@ rule "Si Medusa ha muerto -> aparece su cabeza"
 	when
 		$medusa: CriaturaMitologica(nombre == "Medusa", muerto)
 	then
-		ObjetoMitologico cabezaMedusa = new ObjetoMitologico("Cabeza de Medusa");
+		ObjetoMitologico cabezaMedusa = new ObjetoMitologico("CabezaMedusa");
 		insert(cabezaMedusa);
 		insert(new Petrificar(cabezaMedusa));
 		//System.out.println(cabezaMedusa.toString());
@@ -302,7 +302,7 @@ rule "Si alguien ha matado a Medusa y no tiene contenedor -> muere"
 	salience 5
 	agenda-group "generales"
 	when
-		$cabezaMedusa: ObjetoMitologico(nombre == "Cabeza de Medusa")
+		$cabezaMedusa: ObjetoMitologico(nombre == "CabezaMedusa")
 		Posee($ser:= sujeto, objeto == $cabezaMedusa)
 		not(Contenedor($objeto:= objeto) and Posee(sujeto == $ser, objeto == $objeto))
 	then
@@ -318,7 +318,7 @@ rule "Si alguien ha matado a Medusa -> consigue su cabeza"
 		$s: Ser(!muerto)
 		$medusa: CriaturaMitologica(nombre == "Medusa")
 		Mata(sujeto == $s, receptor == $medusa)
-		$cabezaMedusa: ObjetoMitologico(nombre == "Cabeza de Medusa") and not(Posee(objeto == $cabezaMedusa));
+		$cabezaMedusa: ObjetoMitologico(nombre == "CabezaMedusa") and not(Posee(objeto == $cabezaMedusa));
 	then
 		Posee posee = new Posee($s, $cabezaMedusa);
 		insert(posee);
@@ -346,7 +346,7 @@ rule "Si apresado por Minos, Minotauro muerto y tienes hilo -> dejas de estar ap
 	when
 		$s: Ser()
 		$minotauro: CriaturaMitologica(nombre == "Minotauro", muerto)
-		$hilo: ObjetoMitologico(nombre == "Hilo Imperdible")
+		$hilo: ObjetoMitologico(nombre == "HiloImperdible")
 		$posee: Posee(sujeto == $s, objeto == $hilo) or
 			(Libera(sujeto == $s, $liberado:= receptor) and Posee(sujeto == $liberado, objeto == $hilo)) 
 		$minos: Ser(nombre == "Minos")

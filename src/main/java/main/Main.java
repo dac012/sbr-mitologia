@@ -2,6 +2,7 @@ package main;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Scanner;
 import java.util.stream.Collectors;
 
 import org.kie.api.KieServices;
@@ -39,52 +40,64 @@ public class Main {
 
 	public static void main(String[] args) 
 	{
-		KieServices ks = KieServices.Factory.get();
-    	KieContainer kContainer = ks.getKieClasspathContainer();
-    	
-    	KieSession kSession = kContainer.newKieSession("ksession-rules-dsi2");
-    	
-    	/*
-    	 * Cargar los hechos iniciales.
-    	 */
-    	Inicializador ini = new Inicializador();
-    	
-    	List<Object> inicio = ini.getInstancias();
-    	
-    	DiosMayor poseidon = (DiosMayor)ini.get("Poseidon");
-    	DiosMayor atenea = (DiosMayor)ini.get("Atenea");
-    	DiosMayor hermes = (DiosMayor)ini.get("Hermes");
-    	DiosMayor hades = (DiosMayor)ini.get("Hades");
-    	Mortal casiopea = (Mortal)ini.get("Casiopea");
-    	Heroe perseo = (Heroe)ini.get("Perseo");
-    	Mortal andromeda = (Mortal)ini.get("Andromeda");
-    	
-    	inicio.add(new EnojadoCon(poseidon, casiopea));
-    	inicio.add(new Favorece(atenea, perseo));
-    	inicio.add(new Favorece(hades, perseo));
-    	inicio.add(new Favorece(hermes, perseo));
-    	
-    	//Libera liberaPerseoAndro = new Libera(perseo, andromeda);
-    	Object objetivo = ini.getObjetivo();
-    	if(objetivo == null) {
-    		System.out.println("Objetivo no válido!");
-    		return;
-    	}
-    	insertarObjetivo(kSession, objetivo);
-    	
-    	inicio.stream().forEach(hecho -> kSession.insert(hecho));
-    	
-    	AgendaGroup info = kSession.getAgenda().getAgendaGroup("informacion");
-    	AgendaGroup general = kSession.getAgenda().getAgendaGroup("generales");
-    	
-    	System.out.println("\n\t\tInicialmente...");
-    	info.setFocus();
-    	kSession.fireAllRules();
-    	
-    	System.out.println("\n\t\tY en un momento dado...");
-    	general.setFocus();
-    	kSession.fireAllRules();
-    	kSession.dispose();
+		String escenarios="escenarios";
+		String soluciones="soluciones";
+		
+		if (args.length>=1) escenarios = args[0];
+		if (args.length>=2) soluciones = args[1];
+		
+		for(int i=1;i<2;i++) {
+			String fichero_relato = escenarios+"\\Escenario.F3-"+i+".txt";
+			KieServices ks = KieServices.Factory.get();
+	    	KieContainer kContainer = ks.getKieClasspathContainer();
+	    	
+	    	KieSession kSession = kContainer.newKieSession("ksession-rules-dsi2");
+	    	
+	    	/*
+	    	 * Cargar los hechos iniciales.
+	    	 */
+	    	
+	    	Inicializador ini = new Inicializador(fichero_relato);
+	    	
+	    	List<Object> inicio = ini.getInstancias();
+	    	
+	    	DiosMayor poseidon = (DiosMayor)ini.get("Poseidon");
+	    	DiosMayor atenea = (DiosMayor)ini.get("Atenea");
+	    	DiosMayor hermes = (DiosMayor)ini.get("Hermes");
+	    	DiosMayor hades = (DiosMayor)ini.get("Hades");
+	    	Mortal casiopea = (Mortal)ini.get("Casiopea");
+	    	Heroe perseo = (Heroe)ini.get("Perseo");
+	    	Mortal andromeda = (Mortal)ini.get("Andromeda");
+	    	
+	    	inicio.add(new EnojadoCon(poseidon, casiopea));
+	    	inicio.add(new Favorece(atenea, perseo));
+	    	inicio.add(new Favorece(hades, perseo));
+	    	inicio.add(new Favorece(hermes, perseo));
+	    	
+	    	//Libera liberaPerseoAndro = new Libera(perseo, andromeda);
+	    	Object objetivo = ini.getObjetivo();
+	    	if(objetivo == null) {
+	    		System.out.println("Objetivo no válido!");
+	    		return;
+	    	}
+	    	insertarObjetivo(kSession, objetivo);
+	    	
+	    	inicio.stream().forEach(hecho -> kSession.insert(hecho));
+	    	
+	    	AgendaGroup info = kSession.getAgenda().getAgendaGroup("informacion");
+	    	AgendaGroup general = kSession.getAgenda().getAgendaGroup("generales");
+	    	
+	    	System.out.println("\n\t\tInicialmente...");
+	    	info.setFocus();
+	    	kSession.fireAllRules();
+	    	
+	    	System.out.println("\n\t\tY en un momento dado...");
+	    	general.setFocus();
+	    	kSession.fireAllRules();
+	    	kSession.dispose();
+			
+		}
+		
 	}
 	
 	public static void avisarObjetivoCumplido(Object objetivo)

@@ -56,7 +56,7 @@ public class Inicializador {
 	String string_objetivo = "NO_OBJETIVO";
 	Object hecho_objetivo;
 	
-	public Inicializador() {
+	public Inicializador(String fichero_relato) {
 		instancias = new LinkedList<>();
 		
 		// 1. Seres que aparecen.
@@ -70,7 +70,7 @@ public class Inicializador {
 		
     	int tipo_hecho = -1;
 		try {
-			File myObj = new File("Hechos_Iniciales.txt");
+			File myObj = new File("Conocimiento_Inicial.txt");
 		    Scanner myReader = new Scanner(myObj);
 		    while (myReader.hasNextLine()) {
 		    	String linea = myReader.nextLine();
@@ -89,7 +89,28 @@ public class Inicializador {
 				System.out.println("An error occurred.");
 				e.printStackTrace();
 			}
-    	
+		tipo_hecho = -1;
+		try {
+			File myObj = new File(fichero_relato);
+		    Scanner myReader = new Scanner(myObj);
+		    while (myReader.hasNextLine()) {
+		    	String linea = myReader.nextLine();
+		        tipo_hecho = leerHecho(linea);
+		        if(tipo_hecho== 0) {
+		        	string_objetivo = linea.replace("OBJETIVO ", "");
+		        	tipo_hecho = leerHecho(string_objetivo);
+		        	introducirHecho(tipo_hecho, string_objetivo, true);
+		        }
+		        else {
+		        	introducirHecho(tipo_hecho, linea, false);
+		        }
+		    }
+		    myReader.close();
+		} 	catch (FileNotFoundException e) {
+				System.out.println("An error occurred.");
+				e.printStackTrace();
+			}
+		
     	/*Heroe perseo = new Heroe("Perseo");
     	DiosMayor zeus = new DiosMayor("Zeus");
     	CriaturaMitologica ceto = new CriaturaMitologica("Ceto", TipoCriatura.MARINA);

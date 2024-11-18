@@ -54,6 +54,7 @@ public class Inicializador {
 	List<Capacidad> capacidades = null;
 	Dictionary<String, Integer> diccionario_hechos = leerDiccionarioReglas();
 	String string_objetivo = "NO_OBJETIVO";
+	Object hecho_objetivo;
 	
 	public Inicializador() {
 		instancias = new LinkedList<>();
@@ -74,8 +75,14 @@ public class Inicializador {
 		    while (myReader.hasNextLine()) {
 		    	String linea = myReader.nextLine();
 		        tipo_hecho = leerHecho(linea);
-		        introducirHecho(tipo_hecho, linea);
-		        
+		        if(tipo_hecho== 0) {
+		        	string_objetivo = linea.replace("OBJETIVO ", "");
+		        	tipo_hecho = leerHecho(string_objetivo);
+		        	introducirHecho(tipo_hecho, string_objetivo, true);
+		        }
+		        else {
+		        	introducirHecho(tipo_hecho, linea, false);
+		        }
 		    }
 		    myReader.close();
 		} 	catch (FileNotFoundException e) {
@@ -178,6 +185,10 @@ public class Inicializador {
 		return null;
 	}
 	
+	public Object getObjetivo() {
+		return hecho_objetivo;
+	}
+	
 	public Dictionary<String, Integer> leerDiccionarioReglas() {
 		Dictionary diccionario_hechos = new Hashtable();
 		
@@ -224,7 +235,7 @@ public class Inicializador {
 		return codigo_hecho;
 	}
 	
-	public int introducirHecho(int tipo_hecho, String linea) {
+	public int introducirHecho(int tipo_hecho, String linea, boolean esObjetivo) {
 		String[] linea_dividida = linea.split(" ");
 		//System.out.println("Se va a introducir un hecho tipo "+tipo_hecho+": "+linea);
 		switch (tipo_hecho) {
@@ -244,72 +255,138 @@ public class Inicializador {
 				break;
 			case 1:	//DiosMayor
 				DiosMayor diosmayor = new DiosMayor(linea_dividida[1]);
-				seres.add(diosmayor);
-				instancias.add(diosmayor);
+				if(esObjetivo) {
+					hecho_objetivo = (Object)diosmayor;
+				}
+				else {
+					seres.add(diosmayor);
+					instancias.add(diosmayor);
+				}
+				
 				break;
 				
 			case 2:	//DiosMenor
 				DiosMenor diosmenor = new DiosMenor(linea_dividida[1]);
-				seres.add(diosmenor);
-				instancias.add(diosmenor);
+				if(esObjetivo) {
+					hecho_objetivo = (Object)diosmenor;
+				}
+				else {
+					seres.add(diosmenor);
+					instancias.add(diosmenor);
+				}
+				
 				break;
 		
 			case 3:	//Heroe
 				Heroe heroe = new Heroe(linea_dividida[1]);
-				seres.add(heroe);
-				instancias.add(heroe);
+				if(esObjetivo) {
+					hecho_objetivo = (Object)heroe;
+				}
+				else {
+					seres.add(heroe);
+					instancias.add(heroe);
+				}
+				
 				break;
 			
 			case 4:	//Semidios
 				Semidios semidios = new Semidios(linea_dividida[1]);
-				seres.add(semidios);
-				instancias.add(semidios);
+				if(esObjetivo) {
+					hecho_objetivo = (Object)semidios;
+				}
+				else {
+					seres.add(semidios);
+					instancias.add(semidios);
+				}
+				
 				break;
 			
 			case 5:	//Humano
 				Humano humano = new Humano(linea_dividida[1]);
-				seres.add(humano);
-				instancias.add(humano);
+				if(esObjetivo) {
+					hecho_objetivo = (Object)humano;
+				}
+				else {
+					seres.add(humano);
+					instancias.add(humano);
+				}
+				
 				break;
 			
 			case 6:	//Criatura_normal
 				//TipoCriatura tipocriatura = (TipoCriatura) get(linea_dividida[2]);
 				CriaturaNormal criaturanormal = new CriaturaNormal(linea_dividida[1], TipoCriatura.TERRESTRE);
-				seres.add(criaturanormal);
-				instancias.add(criaturanormal);
+				if(esObjetivo) {
+					hecho_objetivo = (Object)criaturanormal;
+				}
+				else {
+					seres.add(criaturanormal);
+					instancias.add(criaturanormal);
+				}
+				
 				break;
 			
 			case 7:	//Criatura_mitologica
 				CriaturaMitologica criaturamitologica = new CriaturaMitologica(linea_dividida[1], TipoCriatura.TERRESTRE);
-				seres.add(criaturamitologica);
-				instancias.add(criaturamitologica);
+				if(esObjetivo) {
+					hecho_objetivo = (Object)criaturamitologica;
+				}
+				else {
+					seres.add(criaturamitologica);
+					instancias.add(criaturamitologica);
+				}
+				
 				
 				break;
 			
 			case 8:	//Objeto_normal
 				ObjetoNormal objetonormal = new ObjetoNormal(linea_dividida[1]);
-				objetos.add(objetonormal);
-				instancias.add(objetonormal);
+				if(esObjetivo) {
+					hecho_objetivo = (Object)objetonormal;
+				}
+				else {
+					objetos.add(objetonormal);
+					instancias.add(objetonormal);
+				}
+				
 				break;
 			
 			case 9:	//Objeto_mitologico
 				ObjetoMitologico objetomitologico = new ObjetoMitologico(linea_dividida[1]);
-				objetos.add(objetomitologico);
-				instancias.add(objetomitologico);
+				if(esObjetivo) {
+					hecho_objetivo = (Object)objetomitologico;
+				}
+				else {
+					objetos.add(objetomitologico);
+					instancias.add(objetomitologico);
+				}
+				
 				break;
 			
 			case 10:	//Capacidad_contenedor
 				if(get(linea_dividida[1]) instanceof Ser) {
 					Ser recibidor = (Ser)get(linea_dividida[1]);
 					Contenedor contenedor = new Contenedor(recibidor);
-					capacidades.add(contenedor);
-					instancias.add(contenedor);
+					if(esObjetivo) {
+						hecho_objetivo = (Object)contenedor;
+					}
+					else {
+						capacidades.add(contenedor);
+						instancias.add(contenedor);
+					}
+					
 				}
 				else if (get(linea_dividida[1]) instanceof Objeto) {
 					Objeto recibidor = (Objeto)get(linea_dividida[1]);
 					Contenedor contenedor = new Contenedor(recibidor);
-					capacidades.add(contenedor);
-					instancias.add(contenedor);
+					if(esObjetivo) {
+						hecho_objetivo = (Object)contenedor;
+					}
+					else {
+						capacidades.add(contenedor);
+						instancias.add(contenedor);
+					}
+					
 				}
 				else {System.out.println("ERROR AL INTRODUCIR CAPACIDAD CONTENEDOR, EL OBJETIVO NO ES NI UN SER NI UN OBJETO");}
 				break;
@@ -318,14 +395,26 @@ public class Inicializador {
 				if(get(linea_dividida[1]) instanceof Ser) {
 					Ser recibidor = (Ser)get(linea_dividida[1]);
 					Letal letal = new Letal(recibidor);
-					capacidades.add(letal);
-					instancias.add(letal);
+					if(esObjetivo) {
+						hecho_objetivo = (Object)letal;
+					}
+					else {
+						capacidades.add(letal);
+						instancias.add(letal);
+					}
+					
 				}
 				else if (get(linea_dividida[1]) instanceof Objeto) {
 					Objeto recibidor = (Objeto)get(linea_dividida[1]);
 					Letal letal = new Letal(recibidor);
-					capacidades.add(letal);
-					instancias.add(letal);
+					if(esObjetivo) {
+						hecho_objetivo = (Object)letal;
+					}
+					else {
+						capacidades.add(letal);
+						instancias.add(letal);
+					}
+					
 				}
 				else {System.out.println("ERROR AL INTRODUCIR CAPACIDAD LETAL, EL OBJETIVO NO ES NI UN SER NI UN OBJETO");}
 				break;
@@ -334,14 +423,26 @@ public class Inicializador {
 				if(get(linea_dividida[1]) instanceof Ser) {
 					Ser recibidor = (Ser)get(linea_dividida[1]);
 					Domar domar = new Domar(recibidor);
-					capacidades.add(domar);
-					instancias.add(domar);
+					if(esObjetivo) {
+						hecho_objetivo = (Object)domar;
+					}
+					else {
+						capacidades.add(domar);
+						instancias.add(domar);
+					}
+					
 				}
 				else if (get(linea_dividida[1]) instanceof Objeto) {
 					Objeto recibidor = (Objeto)get(linea_dividida[1]);
 					Domar domar = new Domar(recibidor);
-					capacidades.add(domar);
-					instancias.add(domar);
+					if(esObjetivo) {
+						hecho_objetivo = (Object)domar;
+					}
+					else {
+						capacidades.add(domar);
+						instancias.add(domar);
+					}
+					
 				}
 				else {System.out.println("ERROR AL INTRODUCIR CAPACIDAD DOMAR, EL OBJETIVO NO ES NI UN SER NI UN OBJETO");}
 				break;
@@ -350,14 +451,26 @@ public class Inicializador {
 				if(get(linea_dividida[1]) instanceof Ser) {
 					Ser recibidor = (Ser)get(linea_dividida[1]);
 					Invisibilidad invisibilidad = new Invisibilidad(recibidor);
-					capacidades.add(invisibilidad);
-					instancias.add(invisibilidad);
+					if(esObjetivo) {
+						hecho_objetivo = (Object)invisibilidad;
+					}
+					else {
+						capacidades.add(invisibilidad);
+						instancias.add(invisibilidad);
+					}
+					
 				}
 				else if (get(linea_dividida[1]) instanceof Objeto) {
 					Objeto recibidor = (Objeto)get(linea_dividida[1]);
 					Invisibilidad invisibilidad = new Invisibilidad(recibidor);
-					capacidades.add(invisibilidad);
-					instancias.add(invisibilidad);
+					if(esObjetivo) {
+						hecho_objetivo = (Object)invisibilidad;
+					}
+					else {
+						capacidades.add(invisibilidad);
+						instancias.add(invisibilidad);
+					}
+					
 				}
 				else {System.out.println("ERROR AL INTRODUCIR CAPACIDAD INVISIBILIDAD, EL OBJETIVO NO ES NI UN SER NI UN OBJETO");}
 				break;
@@ -366,14 +479,26 @@ public class Inicializador {
 				if(get(linea_dividida[1]) instanceof Ser) {
 					Ser recibidor = (Ser)get(linea_dividida[1]);
 					Petrificar petrificar = new Petrificar(recibidor);
-					capacidades.add(petrificar);
-					instancias.add(petrificar);
+					if(esObjetivo) {
+						hecho_objetivo = (Object)petrificar;
+					}
+					else {
+						capacidades.add(petrificar);
+						instancias.add(petrificar);
+					}
+					
 				}
 				else if (get(linea_dividida[1]) instanceof Objeto) {
 					Objeto recibidor = (Objeto)get(linea_dividida[1]);
 					Petrificar petrificar = new Petrificar(recibidor);
-					capacidades.add(petrificar);
-					instancias.add(petrificar);
+					if(esObjetivo) {
+						hecho_objetivo = (Object)petrificar;
+					}
+					else {
+						capacidades.add(petrificar);
+						instancias.add(petrificar);
+					}
+					
 				}
 				else {System.out.println("ERROR AL INTRODUCIR CAPACIDAD PETRIFICAR, EL OBJETIVO NO ES NI UN SER NI UN OBJETO");}
 				break;
@@ -382,14 +507,26 @@ public class Inicializador {
 				if(get(linea_dividida[1]) instanceof Ser) {
 					Ser recibidor = (Ser)get(linea_dividida[1]);
 					Reflectante reflectante = new Reflectante(recibidor);
-					capacidades.add(reflectante);
-					instancias.add(reflectante);
+					if(esObjetivo) {
+						hecho_objetivo = (Object)reflectante;
+					}
+					else {
+						capacidades.add(reflectante);
+						instancias.add(reflectante);
+					}
+					
 				}
 				else if (get(linea_dividida[1]) instanceof Objeto) {
 					Objeto recibidor = (Objeto)get(linea_dividida[1]);
 					Reflectante reflectante = new Reflectante(recibidor);
-					capacidades.add(reflectante);
-					instancias.add(reflectante);
+					if(esObjetivo) {
+						hecho_objetivo = (Object)reflectante;
+					}
+					else {
+						capacidades.add(reflectante);
+						instancias.add(reflectante);
+					}
+					
 				}
 				else {System.out.println("ERROR AL INTRODUCIR CAPACIDAD REFLECTANTE, EL OBJETIVO NO ES NI UN SER NI UN OBJETO");}
 				break;
@@ -398,14 +535,26 @@ public class Inicializador {
 				if(get(linea_dividida[1]) instanceof Ser) {
 					Ser recibidor = (Ser)get(linea_dividida[1]);
 					Vuelo vuelo = new Vuelo(recibidor);
-					capacidades.add(vuelo);
-					instancias.add(vuelo);
+					if(esObjetivo) {
+						hecho_objetivo = (Object)vuelo;
+					}
+					else {
+						capacidades.add(vuelo);
+						instancias.add(vuelo);
+					}
+					
 				}
 				else if (get(linea_dividida[1]) instanceof Objeto) {
 					Objeto recibidor = (Objeto)get(linea_dividida[1]);
 					Vuelo vuelo = new Vuelo(recibidor);
-					capacidades.add(vuelo);
-					instancias.add(vuelo);
+					if(esObjetivo) {
+						hecho_objetivo = (Object)vuelo;
+					}
+					else {
+						capacidades.add(vuelo);
+						instancias.add(vuelo);
+					}
+					
 				}
 				else {System.out.println("ERROR AL INTRODUCIR CAPACIDAD VUELO, EL OBJETIVO NO ES NI UN SER NI UN OBJETO");}
 				break;
@@ -414,66 +563,112 @@ public class Inicializador {
 				Dios emisor_favor = (Dios)get(linea_dividida[0]);
 				Mortal receptor_favor = (Mortal)get(linea_dividida[2]);
 				Favorece favorece = new Favorece(emisor_favor, receptor_favor);
-				relaciones.add(favorece);
-				instancias.add(favorece);
+				if(esObjetivo) {
+					hecho_objetivo = (Object)favorece;
+				}
+				else {
+					relaciones.add(favorece);
+					instancias.add(favorece);
+				}
+				
 				break;
 				
 			case 18:	//Tiene_enojo_de / Enojo
 				Dios emisor_enojo = (Dios)get(linea_dividida[0]);
 				Mortal receptor_enojo = (Mortal)get(linea_dividida[2]);
 				EnojadoCon enojadocon = new EnojadoCon(emisor_enojo, receptor_enojo);
-				relaciones.add(enojadocon);
-				instancias.add(enojadocon);
+				if(esObjetivo) {
+					hecho_objetivo = (Object)enojadocon;
+				}
+				else {
+					relaciones.add(enojadocon);
+					instancias.add(enojadocon);
+				}
+				
 				break;
 				
 			case 19:	//Posee_objeto
 				Ser poseedor = (Ser)get(linea_dividida[0]);
 				Objeto poseido = (Objeto)get(linea_dividida[2]);
 				Posee posee = new Posee(poseedor, poseido);
-				relaciones.add(posee);
-				instancias.add(posee);
+				if(esObjetivo) {
+					hecho_objetivo = (Object)posee;
+				}
+				else {
+					relaciones.add(posee);
+					instancias.add(posee);
+				}
+				
 				break;
 				
 			case 20:	//Es_hijo_de / Padre
 				Ser sujeto_padre = (Ser)get(linea_dividida[0]);
 				Ser sujeto_hijo = (Ser)get(linea_dividida[2]);
 				Padre padre = new Padre(sujeto_padre, sujeto_hijo);
-				relaciones.add(padre);
-				instancias.add(padre);
+				if(esObjetivo) {
+					hecho_objetivo = (Object)padre;
+				}
+				else {
+					relaciones.add(padre);
+					instancias.add(padre);
+				}
+				
 				break;
 				
 			case 21:	//Tiene_localizado_a / Localiza
 				Ser sujeto_localizador = (Ser)get(linea_dividida[0]);
 				Ser sujeto_localizado = (Ser)get(linea_dividida[2]);
 				Localiza localiza = new Localiza(sujeto_localizador, sujeto_localizado);
-				relaciones.add(localiza);
-				instancias.add(localiza);
+				if(esObjetivo) {
+					hecho_objetivo = (Object)localiza;
+				}
+				else {
+					relaciones.add(localiza);
+					instancias.add(localiza);
+				}
+				
 				break;
 				
 			case 22:	//Ha_matado_a / Mata
 				Ser sujeto_asesino = (Ser)get(linea_dividida[0]);
 				Ser sujeto_muerto = (Ser)get(linea_dividida[2]);
 				Mata mata = new Mata(sujeto_asesino, sujeto_muerto);
-				relaciones.add(mata);
-				instancias.add(mata);
+				if(esObjetivo) {
+					hecho_objetivo = (Object)mata;
+				}
+				else {
+					relaciones.add(mata);
+					instancias.add(mata);
+				}
+				
 				break;
 				
 			case 23:	//Ha_liberado_a / Libera
 				Ser sujeto_liberador = (Ser)get(linea_dividida[0]);
 				Ser sujeto_liberado = (Ser)get(linea_dividida[2]);
 				Libera libera = new Libera(sujeto_liberador, sujeto_liberado);
-				relaciones.add(libera);
-				instancias.add(libera);
+				if(esObjetivo) {
+					hecho_objetivo = (Object)libera;
+				}
+				else {
+					relaciones.add(libera);
+					instancias.add(libera);
+				}
+				
 				break;
 				
 			case 24:	//Ha_apresado_a / Apresa
 				Ser sujeto_apresador = (Ser)get(linea_dividida[0]);
 				Ser sujeto_apresado = (Ser)get(linea_dividida[2]);
 				Apresa apresa = new Apresa(sujeto_apresador, sujeto_apresado);
-				System.out.println(sujeto_apresado);
-				relaciones.add(apresa);
-				instancias.add(apresa);
-				System.out.println(apresa);
+				if(esObjetivo) {
+					hecho_objetivo = (Object)apresa;
+				}
+				else {
+					relaciones.add(apresa);
+					instancias.add(apresa);
+				}
+				
 				break;
 			case 25:	//TO-DO: TIPOS DE CRIATURAS
 				if(get(linea_dividida[1]) instanceof Criatura) {
@@ -490,10 +685,6 @@ public class Inicializador {
 				System.out.println("Hecho no válido encontrado, será omitido");
 				break;
 		}
-		System.out.println(seres);
-		System.out.println(objetos);
-		System.out.println(relaciones);
-		System.out.println(capacidades);
 		return 0;
 	}
 	

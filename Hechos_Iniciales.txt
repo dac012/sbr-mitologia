@@ -1,4 +1,3 @@
-OBJETIVO Perseo Libera Andromeda
 Heroe Perseo
 DiosMayor Zeus
 CriaturaMitologica Ceto
@@ -46,3 +45,4 @@ Atenea Localiza Grayas
 Hades Localiza Grayas
 Hermes Localiza Grayas
 Grayas Localiza Ninfas
+OBJETIVO Perseo Libera Andromeda

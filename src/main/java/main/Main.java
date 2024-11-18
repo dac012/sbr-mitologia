@@ -64,8 +64,13 @@ public class Main {
     	inicio.add(new Favorece(hades, perseo));
     	inicio.add(new Favorece(hermes, perseo));
     	
-    	Libera liberaPerseoAndro = new Libera(perseo, andromeda);
-    	insertarObjetivo(kSession, liberaPerseoAndro);
+    	//Libera liberaPerseoAndro = new Libera(perseo, andromeda);
+    	Object objetivo = ini.getObjetivo();
+    	if(objetivo == null) {
+    		System.out.println("Objetivo no válido!");
+    		return;
+    	}
+    	insertarObjetivo(kSession, objetivo);
     	
     	inicio.stream().forEach(hecho -> kSession.insert(hecho));
     	

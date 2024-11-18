@@ -326,6 +326,20 @@ rule "Si alguien ha matado a Medusa -> consigue su cabeza"
 		//System.out.println($s.getNombre() + " consigue la cabeza de Medusa");
 end
 
+// Reglas Minotauro
+rule "Minos tiene favor de Poseidon -> Doma al Toro de Creta"
+	salience 5
+	agenda-group "generales"
+	when
+		$minos: Semidios(nombre == "Minos", !muerto)
+		$poseidon: Semidios(nombre == "Poseidon")
+		$toroCreta: CriaturaNormal(nombre == "ToroCreta")
+		$favorece: Favorece(sujeto == $poseidon, receptor == $minos)
+	then
+		Doma doma = new Doma($minos, $toroCreta);
+		insert(doma);
+		System.out.println($favorece.toString() + ", por lo que " + doma.toString());
+end
 
 rule "Si matas al minotauro -> ahora sus prisioneros estan apresados por Minos"
 	salience 10

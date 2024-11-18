@@ -302,25 +302,26 @@ rule "Si alguien ha matado a Medusa y no tiene contenedor -> muere"
 	salience 5
 	agenda-group "generales"
 	when
+		$medusa: CriaturaMitologica(nombre == "Medusa", muerto)
 		$cabezaMedusa: ObjetoMitologico(nombre == "CabezaMedusa")
-		Posee($ser:= sujeto, objeto == $cabezaMedusa)
-		not(Contenedor($objeto:= objeto) and Posee(sujeto == $ser, objeto == $objeto))
+		Mata($ser:= sujeto, receptor == $medusa)
+		not(Contenedor($obj:= objeto) and Posee(sujeto == $ser, objeto == $obj))
 	then
 		modify($ser){setMuerto(true);}
-		System.out.println($ser.toString() + " no posee ningun objeto contenedor y tiene " +
-			"la Cabeza de Medusa, por lo que muere");
+		System.out.println($ser.toString() + " no posee Contenedor, por lo que muere");
+		//System.out.println($s.getNombre() + " consigue la cabeza de Medusa");
 end
 
-rule "Si alguien ha matado a Medusa -> consigue su cabeza"
+rule "Si alguien ha matado a Medusa y tiene contenedor -> consigue su cabeza"
 	salience 5
 	agenda-group "generales"
 	when
-		$s: Ser(!muerto)
-		$medusa: CriaturaMitologica(nombre == "Medusa")
-		Mata(sujeto == $s, receptor == $medusa)
-		$cabezaMedusa: ObjetoMitologico(nombre == "CabezaMedusa") and not(Posee(objeto == $cabezaMedusa));
+		$medusa: CriaturaMitologica(nombre == "Medusa", muerto)
+		$cabezaMedusa: ObjetoMitologico(nombre == "CabezaMedusa")
+		Mata($ser:= sujeto, receptor == $medusa)
+		Contenedor($obj:= objeto) and Posee(sujeto == $ser, objeto == $obj)
 	then
-		Posee posee = new Posee($s, $cabezaMedusa);
+		Posee posee = new Posee($ser, $cabezaMedusa);
 		insert(posee);
 		System.out.println(posee.toString());
 		//System.out.println($s.getNombre() + " consigue la cabeza de Medusa");

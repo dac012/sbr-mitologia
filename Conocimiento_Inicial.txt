@@ -22,7 +22,7 @@ ObjetoMitologico EspadaIndestructible
 ObjetoMitologico EscudoBronce
 ObjetoNormal DienteGrayas
 ObjetoNormal OjoGrayas
-Capacidad Zurron
+Contenedor Zurron
 Invisibilidad CascoHades
 Petrificar Medusa
 Letal Hoz

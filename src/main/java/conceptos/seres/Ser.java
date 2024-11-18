@@ -31,4 +31,18 @@ public abstract class Ser {
 	public String toString() {
 		return nombre;
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == null)
+			return false;
+		if(obj == this)
+			return true;
+		if(!(obj instanceof Ser))
+			return false;
+		
+		Ser objeto = (Ser) obj;
+		return objeto.getNombre().equals(this.getNombre()) &&
+				objeto.isMuerto() == this.isMuerto();
+	}
 }

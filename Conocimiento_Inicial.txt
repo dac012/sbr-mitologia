@@ -45,3 +45,20 @@ Atenea Localiza Grayas
 Hades Localiza Grayas
 Hermes Localiza Grayas
 Grayas Localiza Ninfas
+Semidios Minos
+Semidios Pasifae
+Poseidon Favorece Minos
+CriaturaNormal ToroCreta
+Humano Dedalo
+Humano Icaro
+Heroe Teseo
+Humano Ariadna
+Minos Padre Ariadna
+Invisibilidad Teseo
+Teseo Localiza Ariadna
+ObjetoMitologico HiloImperdible
+Imperdible HiloImperdible
+Ariadna Posee HiloImperdible
+ObjetoMitologico EspadaTeseo
+Letal EspadaTeseo
+Teseo Posee EspadaTeseo

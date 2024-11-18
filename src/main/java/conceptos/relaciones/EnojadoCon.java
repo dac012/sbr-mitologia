@@ -1,11 +1,10 @@
 package conceptos.relaciones;
 
-import conceptos.seres.Dios;
-import conceptos.seres.Mortal;
+import conceptos.seres.Ser;
 
 public class EnojadoCon extends Divina {
 
-	public EnojadoCon(Dios sujeto, Mortal receptor)
+	public EnojadoCon(Ser sujeto, Ser receptor)
 	{
 		super(sujeto, receptor);
 	}

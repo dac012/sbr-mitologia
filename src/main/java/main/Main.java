@@ -102,19 +102,23 @@ public class Main {
 	
 	public static void avisarObjetivoCumplido(Object objetivo)
 	{
-		System.out.println("\n\tSE HA CUMPLIDO EL OBJETIVO: " + objetivo.toString());		
+		System.out.println("\n\tSE HA CUMPLIDO EL OBJETIVO: " + objetivo.toString() + "\n");		
 	}
 	
 	public static void insertarObjetivo(KieSession kSession, Object objetivo)
 	{
 		kSession.addEventListener(new DefaultAgendaEventListener() {
+			boolean cumplido = false;
 			@Override
 			public void afterMatchFired(AfterMatchFiredEvent event) {
 				if(kSession.getObjects().stream()
 					.anyMatch(obj -> obj.equals(objetivo)))
 				{
-					avisarObjetivoCumplido(objetivo);
-					kSession.halt();
+					if(!cumplido)
+					{
+						avisarObjetivoCumplido(objetivo);
+						cumplido = true;
+					}
 				}
 			}
 		});

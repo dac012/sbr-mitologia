@@ -11,7 +11,7 @@ public class Enamora extends Personal {
 	
 	@Override
 	public String toString() {
-		return getSujeto().toString() + " esta enamorado de " + getReceptor().toString();
+		return getSujeto().toString() + " esta enamorado o enamorada de " + getReceptor().toString();
 	}
 	
 }

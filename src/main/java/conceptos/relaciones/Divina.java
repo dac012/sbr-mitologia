@@ -1,23 +1,22 @@
 package conceptos.relaciones;
 
-import conceptos.seres.Dios;
-import conceptos.seres.Mortal;
+import conceptos.seres.Ser;
 
 public abstract class Divina extends Relacion {
 	
-	private Mortal receptor;
+	private Ser receptor;
 	
-	public Divina(Dios sujeto, Mortal receptor)
+	public Divina(Ser sujeto, Ser receptor)
 	{
 		super(sujeto);
 		this.receptor = receptor;
 	}
 
-	public Mortal getReceptor() {
+	public Ser getReceptor() {
 		return receptor;
 	}
 
-	public void setReceptor(Mortal receptor) {
+	public void setReceptor(Ser receptor) {
 		this.receptor = receptor;
 	}
 	

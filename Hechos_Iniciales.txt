@@ -1,0 +1,48 @@
+OBJETIVO Perseo Libera Andromeda
+Heroe Perseo
+DiosMayor Zeus
+CriaturaMitologica Ceto
+Marina Ceto
+DiosMayor Poseidon
+Humano Andromeda
+Humano Casiopea
+DiosMayor Hades
+Humano Danae
+CriaturaMitologica Medusa
+Terrestre Medusa
+DiosMenor Grayas
+DiosMenor Ninfas
+DiosMayor Hermes
+DiosMayor Hefesto
+DiosMayor Atenea
+ObjetoMitologico CascoHades
+ObjetoMitologico Zurron
+ObjetoMitologico SandaliasAladas
+ObjetoNormal Hoz
+ObjetoMitologico EspadaIndestructible
+ObjetoMitologico EscudoBronce
+ObjetoNormal DienteGrayas
+ObjetoNormal OjoGrayas
+Capacidad Zurron
+Invisibilidad CascoHades
+Petrificar Medusa
+Letal Hoz
+Letal EspadaIndestructible
+Reflectante EscudoBronce
+Vuelo SandaliasAladas
+Poseidon Apresa Ceto
+Zeus Padre Perseo
+Danae Padre Perseo
+Grayas Posee OjoGrayas
+Grayas Posee DienteGrayas
+Ninfas Posee Zurron
+Ninfas Posee SandaliasAladas
+Hermes Posee Hoz
+Hades Posee CascoHades
+Hefesto Posee EspadaIndestructible
+Atenea Posee EscudoBronce
+Casiopea Padre Andromeda
+Atenea Localiza Grayas
+Hades Localiza Grayas
+Hermes Localiza Grayas
+Grayas Localiza Ninfas

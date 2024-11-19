@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import conceptos.capacidades.Capacidad;
 import conceptos.capacidades.Contenedor;
 import conceptos.capacidades.Domar;
+import conceptos.capacidades.Imperdible;
 import conceptos.capacidades.Letal;
 import conceptos.capacidades.Invisibilidad;
 import conceptos.capacidades.Petrificar;
@@ -579,7 +580,33 @@ public class Inicializador {
 				}
 				else {System.out.println("ERROR AL INTRODUCIR CAPACIDAD VUELO, EL OBJETIVO NO ES NI UN SER NI UN OBJETO");}
 				break;
-				
+			case 27:	//Capacidad_imperdible
+				if(get(linea_dividida[1]) instanceof Ser) {
+					Ser recibidor = (Ser)get(linea_dividida[1]);
+					Imperdible imperdible = new Imperdible(recibidor);
+					if(esObjetivo) {
+						hecho_objetivo = (Object)imperdible;
+					}
+					else {
+						capacidades.add(imperdible);
+						instancias.add(imperdible);
+					}
+					
+				}
+				else if (get(linea_dividida[1]) instanceof Objeto) {
+					Objeto recibidor = (Objeto)get(linea_dividida[1]);
+					Imperdible imperdible = new Imperdible(recibidor);
+					if(esObjetivo) {
+						hecho_objetivo = (Object)imperdible;
+					}
+					else {
+						capacidades.add(imperdible);
+						instancias.add(imperdible);
+					}
+					
+				}
+				else {System.out.println("ERROR AL INTRODUCIR CAPACIDAD VUELO, EL OBJETIVO NO ES NI UN SER NI UN OBJETO");}
+				break;
 			case 17:	//Ofrece_favor / Favor
 				Dios emisor_favor = (Dios)get(linea_dividida[0]);
 				Mortal receptor_favor = (Mortal)get(linea_dividida[2]);
@@ -595,7 +622,7 @@ public class Inicializador {
 				break;
 				
 			case 18:	//Tiene_enojo_de / Enojo
-				Dios emisor_enojo = (Dios)get(linea_dividida[0]);
+				Ser emisor_enojo = (Ser)get(linea_dividida[0]);
 				Mortal receptor_enojo = (Mortal)get(linea_dividida[2]);
 				EnojadoCon enojadocon = new EnojadoCon(emisor_enojo, receptor_enojo);
 				if(esObjetivo) {

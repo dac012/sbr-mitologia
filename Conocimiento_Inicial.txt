@@ -62,3 +62,5 @@ Ariadna Posee HiloImperdible
 ObjetoMitologico EspadaTeseo
 Letal EspadaTeseo
 Teseo Posee EspadaTeseo
+Humano Chico
+Minos EnojadoCon Chico

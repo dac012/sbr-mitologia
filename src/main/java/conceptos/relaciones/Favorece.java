@@ -3,7 +3,7 @@ package conceptos.relaciones;
 import conceptos.seres.Dios;
 import conceptos.seres.Mortal;
 
-public class Favorece extends Divina {
+public class Favorece extends Personal {
 
 	public Favorece(Dios sujeto, Mortal receptor)
 	{

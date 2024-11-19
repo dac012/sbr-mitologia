@@ -3,7 +3,7 @@ package conceptos.relaciones;
 import conceptos.seres.Criatura;
 import conceptos.seres.Ser;
 
-public class Doma extends Accion {
+public class Doma extends Posesion {
 		
 	public Doma(Ser ser, Criatura criatura)
 	{
@@ -11,7 +11,8 @@ public class Doma extends Accion {
 	}
 	
 	@Override
-	public String toString() {
+	public String toString() 
+	{
 		return getSujeto().toString() + " ha domado a " + getReceptor().toString();
 	}
 }

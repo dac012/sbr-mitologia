@@ -2,9 +2,9 @@ package conceptos.relaciones;
 
 import conceptos.seres.Ser;
 
-public class EnojadoCon extends Divina {
+public class Enojado extends Personal {
 
-	public EnojadoCon(Ser sujeto, Ser receptor)
+	public Enojado(Ser sujeto, Ser receptor)
 	{
 		super(sujeto, receptor);
 	}

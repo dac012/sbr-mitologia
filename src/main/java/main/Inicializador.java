@@ -25,7 +25,7 @@ import conceptos.objetos.Objeto;
 import conceptos.objetos.ObjetoMitologico;
 import conceptos.objetos.ObjetoNormal;
 import conceptos.relaciones.Apresa;
-import conceptos.relaciones.EnojadoCon;
+import conceptos.relaciones.Enojado;
 import conceptos.relaciones.Favorece;
 import conceptos.relaciones.Libera;
 import conceptos.relaciones.Localiza;
@@ -624,7 +624,7 @@ public class Inicializador {
 			case 18:	//Tiene_enojo_de / Enojo
 				Ser emisor_enojo = (Ser)get(linea_dividida[0]);
 				Mortal receptor_enojo = (Mortal)get(linea_dividida[2]);
-				EnojadoCon enojadocon = new EnojadoCon(emisor_enojo, receptor_enojo);
+				Enojado enojadocon = new Enojado(emisor_enojo, receptor_enojo);
 				if(esObjetivo) {
 					hecho_objetivo = (Object)enojadocon;
 				}

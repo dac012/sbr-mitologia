@@ -13,30 +13,43 @@ import conceptos.seres.TipoCriatura;
 //declare any global variables here
 
 
-// // **************************REGLAS GENERALES************************** //
+// **************************REGLAS GENERALES************************** //
 
 rule "Informar inicio"
-	salience 10
 	agenda-group "informacion"
 	when
 		$o: Object(!($o instanceof Ser), !($o instanceof Objeto))
 	then
 		System.out.println($o.toString());
 end
-
+ 
 rule "Si alguien que tenia el favor de un Dios ahora tiene su enojo -> ya no tiene el favor"
-	salience 10
+	salience 15
 	agenda-group "generales"
 	when
-		$enojo: EnojadoCon($dios:= sujeto, $mortal:= receptor)
+		$enojo: Enojado($dios:= sujeto, $mortal:= receptor)
 		$favor: Favorece(sujeto == $dios, receptor == $mortal)
 	then
 		delete($favor);
 		System.out.println($enojo.toString() +", por lo que no " + $favor.toString());
 end
 
-rule "Si estabas libre y ahora estas apresado -> ya no estas libre"
+rule "x tiene el Favor de un Dios -> x tiene su inventario"
 	salience 10
+	agenda-group "generales"
+    //include attributes such as "salience" here...
+    when
+        $favor: Favorece($dios:= sujeto, $mortal:= receptor)
+        $pos: Posee(sujeto == $dios, $obj:= objeto)
+    then
+        insert(new Posee($mortal, $obj));
+        delete($pos);
+        System.out.println($favor.toString() +	", por lo que " + 
+        	$mortal.toString() + " consigue " + $obj.toString());
+end
+
+rule "Si estabas libre y ahora estas apresado -> ya no estas libre"
+	salience 15
 	agenda-group "generales"
 	when
 		$libre: Libera($ser:= receptor)
@@ -88,20 +101,6 @@ rule "x mata a y -> x tiene el inventario de y"
 			$asesino.toString() + " consigue " + $obj.toString());
 end
 
-rule "x tiene el Favor de un Dios -> x tiene su inventario"
-	salience 10
-	agenda-group "generales"
-    //include attributes such as "salience" here...
-    when
-        $favor: Favorece($dios:= sujeto, $mortal:= receptor)
-        $pos: Posee(sujeto == $dios, $obj:= objeto)
-    then
-        insert(new Posee($mortal, $obj));
-        delete($pos);
-        System.out.println($favor.toString() +	", por lo que " + 
-        	$mortal.toString() + " consigue " + $obj.toString());
-end
-
 // Voy a suponer que, cuando tres dioses te ofrecen un favor, puedes localizar aquellos que los 3 localizan.
 rule "x tiene favor de tres dioses que localizan a y -> x localiza a y"
 	salience 10
@@ -124,13 +123,14 @@ rule "Si matas al Minotauro -> sus presos ahora estan apresados por Minos"
 	salience 10
 	agenda-group "generales"
 	when
-		$minotauro: CriaturaMitologica(nombre == "Minotauro", muerto)
-		$mata: Mata(receptor == $minotauro)
-		$apresadoMinot: Apresa(sujeto == $minotauro, $preso:= receptor)
+		$s: Ser()
+		$mata: Mata(sujeto == $s, $asesinado: receptor)
+		$prision: Apresa(sujeto == $asesinado, $apresado: receptor)
+		$minotauro: CriaturaMitologica(nombre == "Minotauro", muerto, $minotauro == $s)
 		$minos: Semidios(nombre == "Minos") 
 	then
-		delete($apresadoMinot);
-		Apresa apresa = new Apresa($minos, $preso);
+		delete($prision);
+		Apresa apresa = new Apresa($minos, $apresado);
 		insert(apresa);
 		System.out.println($mata.toString() + ", por lo que " + apresa.toString());
 end
@@ -157,7 +157,7 @@ rule "Poseidon enojado con Casiopea -> Poseidon libera a Ceto"
     when
         $pos: DiosMayor(nombre == "Poseidon", !muerto)
         $casiopea: Mortal(nombre == "Casiopea", !muerto)
-        $enojadoPos: EnojadoCon(sujeto == $pos, receptor == $casiopea)
+        $enojadoPos: Enojado(sujeto == $pos, receptor == $casiopea)
         $criaturaMarina: CriaturaMitologica(tipo == TipoCriatura.MARINA, !muerto)
         $apres: Apresa(sujeto == $pos, receptor == $criaturaMarina)
        	$otraCriatura: CriaturaMitologica(!muerto) and not(Libera(sujeto == $pos, receptor == $otraCriatura))
@@ -176,7 +176,7 @@ rule "Poseidón ha liberado una criatura marina y enojado con Casiopea -> la cri
 		$criatura: CriaturaMitologica(tipo == TipoCriatura.MARINA, !muerto)
 		Libera(sujeto == $pos, receptor == $criatura)
         $casiopea: Mortal(nombre == "Casiopea", !muerto)
-        $enojo: EnojadoCon(sujeto == $pos, receptor == $casiopea)
+        $enojo: EEnojadosujeto == $pos, receptor == $casiopea)
         $hijo: Ser(!muerto) and Padre(sujeto == $casiopea, receptor == $hijo)
         not(Apresa(receptor == $hijo))
 	then
@@ -332,7 +332,7 @@ rule "Si Minos tiene domado el Toro de Creta -> Poseidon se enfada con Minos"
 		$toroCreta: CriaturaNormal(nombre == "ToroCreta")
 		$domaMinosToro: Doma(sujeto == $minos, receptor == $toroCreta)
 	then
-		EnojadoCon enojoPoseMinos = new EnojadoCon($poseidon, $minos);
+		EEnojadoenojoPoseMinos = new EEnojado$poseidon, $minos);
 		insert(enojoPoseMinos);
 		System.out.println($domaMinosToro.toString() + ", por lo que " + enojoPoseMinos.toString());
 end
@@ -343,7 +343,7 @@ rule "Si Poseidon se enfada con Minos y Minos doma al Toro de Creta -> Pasifae s
 	when
 		$poseidon: DiosMayor(nombre == "Poseidon")
 		$minos: Semidios(nombre == "Minos")
-		$enojoPosMinos: EnojadoCon(sujeto == $poseidon, receptor == $minos)
+		$enojoPosMinos: EEnojadosujeto == $poseidon, receptor == $minos)
 		$toroDeCreta: CriaturaNormal(nombre == "ToroCreta")
 		$domado: Doma(sujeto == $minos, receptor == $toroDeCreta)
 		$pasifae: Semidios(nombre == "Pasifae", !muerto)
@@ -387,7 +387,7 @@ rule "Si Minotauro esta libre e Icaro y Dedalo estan vivos -> Minos Apresa al Mi
 end
 
 rule "Si Ariadna esta enamorada de un heroe -> le da sus objetos"
-	salience 10
+	salience 5
 	agenda-group "generales"
 	when
 		$ariadna: Mortal(nombre == "Ariadna", !muerto)
@@ -419,14 +419,14 @@ rule "Si un heroe tiene invisibilidad y conoce la localizacion de Ariadna -> Ari
 end
 
 rule "Si Ariadna se enamora de alguien -> Minos se enfada con el"
-	salience 10
+	salience 5
 	agenda-group "generales"
 	when
 		$ariadna: Mortal(nombre == "Ariadna")
 		$enamorada: Enamora(sujeto == $ariadna, $amor:= receptor)
 		$minos: Semidios(nombre == "Minos")
 	then
-		EnojadoCon enojo = new EnojadoCon($minos, $amor);
+		EEnojadoenojo = new EEnojado$minos, $amor);
 		insert(enojo);
 		System.out.println($enamorada.toString() + ", por lo que " + enojo.toString());
 end
@@ -438,7 +438,7 @@ rule "Si Minos se enfada con Mortal -> lo encierra en el laberinto y localiza Mi
 		$minos: Semidios(nombre == "Minos", !muerto)
 		$minotauro: CriaturaMitologica(nombre == "Minotauro") 
 		Apresa(sujeto == $minos, receptor == $minotauro)
-		$enojo: EnojadoCon(sujeto == $minos, $mortal:= receptor)
+		$enojo: EEnojadosujeto == $minos, $mortal:= receptor)
 		not(Apresa(receptor == $mortal))	// Comprobar que no estaba apresado previamente.
 	then
 		delete($enojo);
@@ -514,8 +514,8 @@ rule "Si estas Apresado por Minos y el Minotauro esta muerto y Icaro y Dedalo es
 		$icaro: Humano(nombre == "Icaro", !muerto)
 		$dedalo: Humano(nombre == "Dedalo", !muerto)
 	then
-		EnojadoCon enojoIcaro = new EnojadoCon($minos, $icaro);
-		EnojadoCon enojoDedalo = new EnojadoCon($minos, $dedalo);
+		EEnojadoenojoIcaro = new EEnojado$minos, $icaro);
+		EEnojadoenojoDedalo = new EEnojado$minos, $dedalo);
 		insert(enojoIcaro);
 		insert(enojoDedalo);
 		delete($apresado);
@@ -624,32 +624,17 @@ rule "Si Icaro tiene capacidad Vuelo y encerrado por Minos -> deja de estar ence
 			+ " de sus alas y muere");
 end
 
-
-/*
-rule "Si apresado por Minos, Minotauro muerto y tienes hilo -> dejas de estar apresado"
+// Para intercalar mitos
+rule "Si has liberado a Andromeda, Zeus te dice donde esta Ariadna"
+	salience 5
+	agenda-group "generales"
 	when
-		$s: Ser()
-		$minotauro: CriaturaMitologica(nombre == "Minotauro", muerto)
-		$hilo: ObjetoMitologico(nombre == "HiloImperdible")
-		$posee: Posee(sujeto == $s, objeto == $hilo) or
-			(Libera(sujeto == $s, $liberado:= receptor) and Posee(sujeto == $liberado, objeto == $hilo)) 
-		$minos: Ser(nombre == "Minos")
-		$apresado: Apresa(sujeto == $minos, receptor == $s)
+		$s: Ser(!muerto)
+		$andromeda: Mortal(nombre == "Andromeda", !muerto)
+		$libera: Libera(sujeto == $s, receptor == $andromeda)
+		$ariadna: Humano(nombre == "Ariadna")
 	then
-		delete($apresado);
-		System.out.println("Ya no " + $apresado.toString());
+		Localiza localiza = new Localiza($s, $ariadna);
+		insert(localiza);
+		System.out.println($libera.toString() + ", por lo que Zeus le da la localizacion de " + $ariadna.toString());
 end
-
-rule "Si apresado por Minos, Minotauro muerto y tu liberador libre -> dejas de estar apresado"
-	when
-		$minos: Ser(nombre == "Minos")
-		$s: Ser() and $apresado: Apresa(sujeto == $minos, receptor == $s)
-		$liberadoMinotauro: Libera($liberador:= sujeto, receptor == $s)
-		not(Apresa(sujeto == $minos, receptor == $liberador))
-	then
-		delete($apresado);
-		delete($liberadoMinotauro);
-		Libera liberadoMinos = new Libera($liberador, $s);
-		System.out.println($liberador.toString() + "esta libre y " + $liberadoMinotauro.toString() + ", por lo que " +
-			"ya no " + $apresado.toString());		
-end*/

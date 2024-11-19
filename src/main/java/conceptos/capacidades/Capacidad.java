@@ -1,30 +1,10 @@
 package conceptos.capacidades;
 
-import conceptos.objetos.Objeto;
-import conceptos.seres.Ser;
-
-public abstract class Capacidad {
-	private final Objeto objeto;
-	private final Ser sujeto;
+public class Capacidad {
+	String nombre;
 	
-	public Capacidad(Objeto objeto)
+	public Capacidad(String nombre)
 	{
-		this.objeto = objeto;
-		sujeto = null;
+		this.nombre = nombre;
 	}
-	
-	public Capacidad(Ser sujeto)
-	{
-		this.sujeto = sujeto;
-		objeto = null;
-	}
-	
-	public Objeto getObjeto() {
-		return objeto;
-	}
-	
-	public Ser getSujeto() {
-		return sujeto;
-	}
-	
 }

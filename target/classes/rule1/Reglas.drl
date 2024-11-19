@@ -39,7 +39,7 @@ end
 rule "Enojado Poseidon con un ser -> Libera a Ceto"
     when
         $casiopea: Mortal(nombre == "Casiopea", !muerto)
-        $poseidon: DiosMayor(nombre == "Poseidon", !muerto) and EnojadoCon(sujeto == $poseidon, receptor == $casiopea)
+        $poseidon: DiosMayor(nombre == "Poseidon", !muerto) and Enojado(sujeto == $poseidon, receptor == $casiopea)
         $ceto: Criatura(nombre == "Ceto", !muerto) and $presoCeto: Apresa(sujeto == $poseidon, receptor == $ceto)
     then
         delete($presoCeto);

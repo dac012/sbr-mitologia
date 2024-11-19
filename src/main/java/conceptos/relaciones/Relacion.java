@@ -1,22 +1,30 @@
 package conceptos.relaciones;
 
-import conceptos.seres.Ser;
-
 public abstract class Relacion {
 	
-	private Ser sujeto;
+	private Object sujeto;
+	private Object receptor;
 
-	public Relacion(Ser sujeto)
+	public Relacion(Object sujeto, Object receptor)
 	{
 		this.sujeto = sujeto;
+		this.receptor = receptor;
 	}
-	
-	public Ser getSujeto() {
+
+	public Object getSujeto() {
 		return sujeto;
 	}
 
-	public void setSujeto(Ser sujeto) {
+	public void setSujeto(Object sujeto) {
 		this.sujeto = sujeto;
+	}
+
+	public Object getReceptor() {
+		return receptor;
+	}
+
+	public void setReceptor(Object receptor) {
+		this.receptor = receptor;
 	}
 	
 }

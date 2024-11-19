@@ -1,6 +1,5 @@
 package main;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
@@ -13,13 +12,12 @@ import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.Agenda;
 import org.kie.api.runtime.rule.AgendaGroup;
 
-import conceptos.capacidades.Petrificar;
 import conceptos.objetos.Objeto;
 import conceptos.objetos.ObjetoMitologico;
 import conceptos.objetos.ObjetoNormal;
 import conceptos.relaciones.Accion;
 import conceptos.relaciones.Apresa;
-import conceptos.relaciones.EnojadoCon;
+import conceptos.relaciones.Enojado;
 import conceptos.relaciones.Favorece;
 import conceptos.relaciones.Libera;
 import conceptos.relaciones.Localiza;
@@ -69,7 +67,7 @@ public class Main {
 	    	Heroe perseo = (Heroe)ini.get("Perseo");
 	    	Mortal andromeda = (Mortal)ini.get("Andromeda");
 	    	
-	    	inicio.add(new EnojadoCon(poseidon, casiopea));
+	    	inicio.add(new Enojado(poseidon, casiopea));
 	    	inicio.add(new Favorece(atenea, perseo));
 	    	inicio.add(new Favorece(hades, perseo));
 	    	inicio.add(new Favorece(hermes, perseo));

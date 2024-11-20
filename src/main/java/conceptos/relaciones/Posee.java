@@ -11,6 +11,17 @@ public class Posee extends Posesion {
 	}
 
 	@Override
+	public Ser getSujeto() 
+	{
+		return (Ser)super.getSujeto(); 
+	}
+	
+	public Objeto getObjeto()
+	{
+		return (Objeto)super.getReceptor();
+	}
+	
+	@Override
 	public String toString() 
 	{
 		return getSujeto().toString() + " tiene " + getReceptor().toString();

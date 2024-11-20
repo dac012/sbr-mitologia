@@ -11,6 +11,17 @@ public class Debil extends Posesion {
 	}
 	
 	@Override
+	public Criatura getSujeto() 
+	{
+		return (Criatura)super.getSujeto();
+	}
+	
+	public Capacidad getCapacidad()
+	{
+		return (Capacidad)getReceptor();
+	}
+	
+	@Override
 	public String toString() {
 		return getSujeto().toString() + " tiene debilidad a " + getReceptor().toString();
 	}

@@ -9,4 +9,16 @@ public abstract class Personal extends Relacion {
 		super(sujeto, receptor);
 	}
 	
+	@Override
+	public Ser getSujeto() 
+	{
+		return (Ser) super.getSujeto();
+	}
+	
+	@Override
+	public Ser getReceptor() 
+	{
+		return (Ser)super.getReceptor();
+	}
+	
 }

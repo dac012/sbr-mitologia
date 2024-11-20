@@ -10,17 +10,16 @@ public abstract class Accion extends Relacion {
 	}
 	
 	@Override
-	public boolean equals(Object obj) {
-		if(obj == null)
-			return false;
-		if(this == obj)
-			return true;
-		if(!(obj instanceof Accion))
-			return false;
-		
-		Accion objeto = (Accion)obj;
-		return objeto.getSujeto().equals(this.getSujeto())
-				&& objeto.getReceptor().equals(this.getReceptor());
+	public Ser getSujeto() 
+	{
+		return (Ser)super.getSujeto();
 	}
 	
+	@Override
+	public Ser getReceptor() 
+	{
+		// TODO Auto-generated method stub
+		return (Ser)super.getReceptor();
+	}
+		
 }

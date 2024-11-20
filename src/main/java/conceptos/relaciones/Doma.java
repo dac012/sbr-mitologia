@@ -11,6 +11,17 @@ public class Doma extends Posesion {
 	}
 	
 	@Override
+	public Ser getSujeto() 
+	{
+		return (Ser)super.getSujeto();
+	}
+	
+	public Criatura getReceptor()
+	{
+		return (Criatura)super.getReceptor();
+	}
+	
+	@Override
 	public String toString() 
 	{
 		return getSujeto().toString() + " ha domado a " + getReceptor().toString();

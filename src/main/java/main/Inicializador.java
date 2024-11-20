@@ -13,14 +13,6 @@ import java.util.Scanner;
 import java.util.stream.Collectors;
 
 import conceptos.capacidades.Capacidad;
-import conceptos.capacidades.Contenedor;
-import conceptos.capacidades.Domar;
-import conceptos.capacidades.Imperdible;
-import conceptos.capacidades.Letal;
-import conceptos.capacidades.Invisibilidad;
-import conceptos.capacidades.Petrificar;
-import conceptos.capacidades.Reflectante;
-import conceptos.capacidades.Vuelo;
 import conceptos.objetos.Objeto;
 import conceptos.objetos.ObjetoMitologico;
 import conceptos.objetos.ObjetoNormal;

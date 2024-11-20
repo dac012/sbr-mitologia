@@ -11,7 +11,7 @@ public abstract class Relacion {
 		this.receptor = receptor;
 	}
 
-	public Object getSujeto() {
+	protected Object getSujeto() {
 		return sujeto;
 	}
 
@@ -19,7 +19,8 @@ public abstract class Relacion {
 		this.sujeto = sujeto;
 	}
 
-	public Object getReceptor() {
+	protected Object getReceptor() 
+	{
 		return receptor;
 	}
 

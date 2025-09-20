@@ -1,6 +1,6 @@
 # Sistema Basado en Reglas: Mitología
 
-Este repositorio implementa y prueba un **sistema basado en reglas (SBR)** orientado al dominio de la mitología, como parte de la asignatura Desarrollo de Sistemas de Información (DSI) 2024-2025. El sistema permite modelar y razonar sobre hechos, reglas y escenarios mitológicos.
+Este repositorio implementa y prueba un **sistema basado en reglas (SBR)** orientado al dominio de la mitología. El sistema permite modelar y razonar sobre hechos, reglas y escenarios mitológicos.
 
 ## Características principales
 
